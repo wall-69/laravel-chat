@@ -1,1 +1,45 @@
+@import url("https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+
+$body-color: #212121;
+$body-secondary-color: #757575;
+$body-bg: #fff;
+
+$link-color: $body-color;
+$link-hover-color: $primary;
+$link-decoration: none;
+$link-hover-decoration: underline;
+
+$primary: #3f51b5;
+$custom-colors: (
+    "secondary": #303f9f,
+    "accent": #448aff,
+    "divider": #bdbdbd,
+);
+
+$font-family-sans-serif: "Montserrat";
+$h1-font-size: 72px;
+$h2-font-size: 48px;
+$h3-font-size: 36px;
+
+$theme-colors: map-merge($theme-colors, $custom-colors);
+
+$utilities: (
+    "width": (
+        property: width,
+        class: w,
+        responsive: true,
+        values: (
+            25: 25%,
+            33: 33%,
+            50: 50%,
+            66: 66%,
+            75: 75%,
+            100: 100%,
+            auto: auto,
+        ),
+    ),
+);
 @import "bootstrap/scss/bootstrap";
