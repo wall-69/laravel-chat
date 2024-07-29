@@ -20,9 +20,6 @@ $custom-colors: (
 );
 
 $font-family-sans-serif: "Montserrat";
-$h1-font-size: 72px;
-$h2-font-size: 48px;
-$h3-font-size: 36px;
 
 $theme-colors: map-merge($theme-colors, $custom-colors);
 
