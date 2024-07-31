@@ -8,7 +8,6 @@ class ChatController extends Controller
 {
     public function index()
     {
-        dd(auth()->user());
         return view("chat.index");
     }
 }
