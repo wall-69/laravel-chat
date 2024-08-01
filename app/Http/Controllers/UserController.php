@@ -24,7 +24,7 @@ class UserController extends Controller
         return redirect(route("login"))->withErrors(["email" => "The provided credentials do not match our records."]);
     }
 
-    public function register(Request $request)
+    public function create(Request $request)
     {
         $data = $request->validate([
             "nickname" => "required|min:5|max:20",
@@ -36,5 +36,14 @@ class UserController extends Controller
         auth()->login($user);
 
         return redirect(route("chat.index"));
+    }
+
+    public function logout(Request $request)
+    {
+        auth()->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect(route("index"));
     }
 }

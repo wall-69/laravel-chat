@@ -5,7 +5,13 @@
             <li><a href="{{ route('chat.index') }}" class="text-white fs-5 fw-bold">Chat</a></li>
             <li><a href="#" class="text-white fs-5">Channels</a></li>
             <li><a href="#" class="text-white fs-5">My Profile</a></li>
-            <li><a href="#" class="text-white fs-5">Log Out</a></li>
+            <li>
+                <form action="{{ route('users.logout') }}" method="POST">
+                    @method('POST')
+                    @csrf
+                    <button class="bg-transparent border-0 text-white fs-5">Log Out</button>
+                </form>
+            </li>
         </ul>
     </nav>
 </header>

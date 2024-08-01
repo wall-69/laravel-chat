@@ -13,10 +13,13 @@ $link-decoration: none;
 $link-hover-decoration: underline;
 
 $primary: #3f51b5;
+$secondary: #303f9f;
+$accent: #448aff;
+$divider: #bdbdbd;
 $custom-colors: (
-    "secondary": #303f9f,
-    "accent": #448aff,
-    "divider": #bdbdbd,
+    "secondary": $secondary,
+    "accent": $accent,
+    "divider": $divider,
 );
 
 $font-family-sans-serif: "Montserrat";
@@ -40,3 +43,19 @@ $utilities: (
     ),
 );
 @import "bootstrap/scss/bootstrap";
+
+.bg-unread-chat-tab {
+    background: linear-gradient(45deg, $accent, $secondary);
+}
+.bg-unread-chat-tab:hover {
+    cursor: pointer;
+    background: $accent;
+}
+
+.bg-read-chat-tab {
+    background: $primary;
+}
+.bg-read-chat-tab:hover {
+    cursor: pointer;
+    background: $accent;
+}
