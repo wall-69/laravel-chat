@@ -1,7 +1,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
+$primary: #3f51b5;
+$secondary: #303f9f;
+$accent: #448aff;
+$divider: #bdbdbd;
 
 $body-color: #212121;
 $body-secondary-color: #757575;
@@ -12,10 +14,9 @@ $link-hover-color: $primary;
 $link-decoration: none;
 $link-hover-decoration: underline;
 
-$primary: #3f51b5;
-$secondary: #303f9f;
-$accent: #448aff;
-$divider: #bdbdbd;
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+
 $custom-colors: (
     "secondary": $secondary,
     "accent": $accent,
@@ -42,6 +43,7 @@ $utilities: (
         ),
     ),
 );
+
 @import "bootstrap/scss/bootstrap";
 
 .bg-unread-chat-tab {
@@ -58,4 +60,20 @@ $utilities: (
 .bg-read-chat-tab:hover {
     cursor: pointer;
     background: $accent;
+}
+
+.bg-chat {
+    background: linear-gradient(to bottom, $secondary, $primary, $secondary);
+}
+
+.received-message-shadow {
+    box-shadow: 0.5rem 0.5rem 1rem rgba($black, 0.25);
+}
+
+.sent-message-shadow {
+    box-shadow: -0.5rem 0.5rem 1rem rgba($black, 0.25);
+}
+
+.mw-0 {
+    min-width: 0;
 }
