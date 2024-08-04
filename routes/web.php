@@ -15,6 +15,8 @@ Route::controller(HomeController::class)->group(function () {
 });
 
 Route::controller(UserController::class)->name("users.")->group(function () {
+    Route::get("/profile/{nickname}", "show")->name("show");
+
     Route::middleware("guest")->group(function () {
         Route::post("/login", "login")->name("login");
         Route::post("/register", "create")->name("create");

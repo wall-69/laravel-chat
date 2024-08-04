@@ -6,8 +6,8 @@
         {{-- Chat info --}}
         <div class="container border-bottom border-divider border-opacity-25 pb-2 d-flex justify-content-between">
             <div class="d-flex align-items-center gap-2">
-                <img src="img/chat/female_avatar.svg" alt="X's profile picture" class="bg-white rounded-5" height="45"
-                    width="45">
+                <img src="/img/chat/female_avatar.svg" alt="X's profile picture" class="bg-white rounded-circle"
+                    height="45" width="45">
                 <p class="m-0 text-white fw-bold">sarah45</p>
             </div>
             <button class="border-0 bg-transparent text-white">
@@ -16,7 +16,7 @@
         </div>
 
         {{-- Chat --}}
-        <div class="d-flex flex-column py-2 overflow-y-scroll px-3">
+        <div class="d-flex flex-column py-2 overflow-y-scroll px-3 mt-auto">
             <x-chat-sent-message message="we met jack yesterday" />
             <x-chat-received-message message="did him and Paul talk?" />
             <x-chat-sent-message message="they argued for a bit" />
@@ -25,7 +25,7 @@
         </div>
 
         {{-- Input --}}
-        <div class="input-group shadow mt-auto rounded-5">
+        <div class="input-group shadow rounded-5">
             <input type="text" name="message"
                 class="form-control py-2 border border-start-0 border-divider border-opacity-25 bg-primary text-white rounded-start-4">
             <button type="submit"

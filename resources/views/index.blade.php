@@ -22,7 +22,7 @@
                     @endauth
                 </div>
                 <div class="col d-lg-block d-none">
-                    <img src="img/chatting.svg" alt="Image of a mobile phone on which a chat is opened." class="img-fluid">
+                    <img src="/img/chatting.svg" alt="Image of a mobile phone on which a chat is opened." class="img-fluid">
                 </div>
             </div>
         </div>

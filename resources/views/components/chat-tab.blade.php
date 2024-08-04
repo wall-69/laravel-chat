@@ -3,7 +3,8 @@
 
 <div class="d-flex gap-2 m-0 bg-{{ $type }}-chat-tab p-2 border-bottom border-divider">
     {{-- Profile/channel Picture --}}
-    <img src="img/chat/female_avatar.svg" alt="X's profile picture" class="bg-white rounded-5" width="65" height="65">
+    <img src="/img/chat/female_avatar.svg" alt="X's profile picture" class="bg-white rounded-circle" width="65"
+        height="65">
 
     <div class="d-flex flex-column mw-0">
         {{-- Profile Name --}}

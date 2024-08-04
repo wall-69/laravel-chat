@@ -4,14 +4,18 @@
         <ul class="list-unstyled d-flex my-auto gap-5">
             <li><a href="{{ route('chat.index') }}" class="text-white fs-5 fw-bold">Chat</a></li>
             <li><a href="#" class="text-white fs-5">Channels</a></li>
-            <li><a href="#" class="text-white fs-5">My Profile</a></li>
-            <li>
-                <form action="{{ route('users.logout') }}" method="POST">
-                    @method('POST')
-                    @csrf
-                    <button class="bg-transparent border-0 text-white fs-5">Log Out</button>
-                </form>
-            </li>
+            @auth
+                <li><a href="{{ route('users.show', ['nickname' => auth()->user()->nickname]) }}" class="text-white fs-5">My
+                        Profile</a>
+                </li>
+                <li>
+                    <form action="{{ route('users.logout') }}" method="POST">
+                        @method('POST')
+                        @csrf
+                        <button class="bg-transparent border-0 text-white fs-5">Log Out</button>
+                    </form>
+                </li>
+            @endauth
         </ul>
     </nav>
 </header>

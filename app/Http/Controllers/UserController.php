@@ -46,4 +46,10 @@ class UserController extends Controller
 
         return redirect(route("index"));
     }
+
+    public function show(string $nickname)
+    {
+        $user = User::where("nickname", $nickname)->first();
+        return view("chat.profile", ["user" => $user]);
+    }
 }
