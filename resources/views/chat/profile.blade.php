@@ -51,9 +51,9 @@
                             </form>
                         @endif
                     </div>
-                    @if (auth()->check() && auth()->user()->nickname == $user->nickname)
-                        {{-- Column 2 --}}
-                        <div class="d-flex flex-column gap-5">
+                    <div class="d-flex flex-column gap-5">
+                        @if (auth()->check() && auth()->user()->nickname == $user->nickname)
+                            {{-- Column 2 --}}
                             {{-- Change email --}}
                             <form class="px-5 py-4 bg-secondary rounded-4 d-flex flex-column gap-2">
                                 <h3
@@ -111,8 +111,38 @@
                                     </button>
                                 </div>
                             </form>
-                        </div>
-                    @endif
+                        @else
+                            <div class="px-3 py-2 bg-secondary rounded-4 shadow d-flex flex-column gap-2">
+                                <form method="POST" action="{{ route('chat.create') }}">
+                                    @method('POST')
+                                    @csrf
+
+                                    <input type="hidden" name="users[]" value="{{ auth()->user()->id }}">
+                                    <input type="hidden" name="users[]" value="{{ $user->id }}">
+
+
+                                    <button type="submit"
+                                        class="border-0 bg-transparent d-flex align-items-center gap-2 text-white">
+                                        <i class="bx bx-user-plus bx-md"></i>
+                                        <span class="fs-5 fw-bold">
+                                            Start chat
+                                        </span>
+                                    </button>
+                                </form>
+                                <form method="POST">
+                                    @method('POST')
+                                    @csrf
+
+                                    <button type="submit" class="border-0 bg-transparent d-flex align-items-center gap-2">
+                                        <i class="bx bx-user-minus bx-md"></i>
+                                        <span class="fs-5 fw-bold">
+                                            Block
+                                        </span>
+                                    </button>
+                                </form>
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
         @else

@@ -1,5 +1,5 @@
 {{-- namiesto user musi byt chat, chat bude mat users list & chat name --}}
-@props(['user', 'messages'])
+@props(['chat', 'messages'])
 
 <div class="gap-2 m-0 p-2 bg-chat rounded-3 shadow h-100">
     <div class="container py-3 d-flex flex-column h-100">
@@ -8,7 +8,7 @@
             <div class="d-flex align-items-center gap-2">
                 <img src="/img/chat/female_avatar.svg" alt="X's profile picture" class="bg-white rounded-circle"
                     height="45" width="45">
-                <p class="m-0 text-white fw-bold">sarah45</p>
+                <p class="m-0 text-white fw-bold">{{ $chat->name }}</p>
             </div>
             <button class="border-0 bg-transparent text-white">
                 <i class="bx bx-dots-horizontal-rounded bx-md"></i>

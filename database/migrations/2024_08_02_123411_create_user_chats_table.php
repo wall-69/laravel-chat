@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class)->onDelete("cascade");
             $table->foreignIdFor(Chat::class)->onDelete("cascade");
+            $table->string("name");
             $table->timestamp("joined_at");
             $table->timestamps();
             $table->unique(["user_id", "chat_id"]);

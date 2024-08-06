@@ -20,6 +20,7 @@ class User extends Authenticatable
         'nickname',
         'email',
         'password',
+        "profile_picture"
     ];
 
     /**
@@ -43,5 +44,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function userChats()
+    {
+        return $this->hasMany(UserChat::class);
     }
 }
