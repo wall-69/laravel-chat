@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string("name");
             $table->boolean("is_private");
-            $table->string("chat_picture");
             $table->timestamps();
         });
     }

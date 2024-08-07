@@ -10,6 +10,6 @@ class UserChat extends Model
     use HasFactory;
 
     protected $fillable = [
-        "user_id", "chat_id", "name", "joined_at"
+        "user_id", "chat_id", "name", "picture", "joined_at"
     ];
 }

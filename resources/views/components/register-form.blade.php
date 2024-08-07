@@ -3,7 +3,7 @@
         'class' =>
             'container rounded-5 d-flex flex-column align-items-center gap-3 px-5 py-3 bg-secondary text-white text-center',
     ]) }}
-    method="POST" action="{{ route('users.create') }}">
+    method="POST" action="{{ route('users.create') }}" enctype="multipart/form-data">
     @method('POST')
     @csrf
 
@@ -29,6 +29,15 @@
         <label for="password" class="text-start fw-bold">password:</label>
         <input type="password" name="password" class="py-2 px-1" value="{{ old('password') }}">
         @error('password')
+            <p class="text-warning fw-bold text-start">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div class="w-100 d-flex flex-column">
+        <label for="profile_picture" class="text-start fw-bold">profile picture:</label>
+        <input type="file" name="profile_picture" class="py-2 px-1 text-white" value="{{ old('profile_picture') }}"
+            accept="image/*">
+        @error('profile_picture')
             <p class="text-warning fw-bold text-start">{{ $message }}</p>
         @enderror
     </div>

@@ -31,7 +31,7 @@ class ChatController extends Controller
         if (count($users) == 2) {
             $chat = Chat::create([
                 "name" => $users[0]["nickname"] . "," . $users[1]["nickname"],
-                "is_private" => true
+                "is_private" => true,
             ]);
         } else {
             // TODO: group chat
@@ -41,7 +41,8 @@ class ChatController extends Controller
             $userChat = UserChat::create([
                 "user_id" => $user->id,
                 "chat_id" => $chat->id,
-                "name" => str_replace(",", "", str_replace($user->nickname, "", $chat->name))
+                "name" => str_replace(",", "", str_replace($user->nickname, "", $chat->name)),
+                "picture" => count($users) == 2 ? ($user->id == $users[0]["id"] ? $users[1]["profile_picture"] : $users[0]["profile_picture"]) : "img/chat/default_chat_picture.svg"
             ]);
         }
 

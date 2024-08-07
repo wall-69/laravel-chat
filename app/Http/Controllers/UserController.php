@@ -29,8 +29,13 @@ class UserController extends Controller
         $data = $request->validate([
             "nickname" => "required|min:5|max:20",
             "email" => "required|email",
-            "password" => "required|min:5"
+            "password" => "required|min:5",
+            "profile_picture" => "required|image"
         ]);
+
+        // Profile picture
+        $filePath = $request->file("profile_picture")->store("img/pfp", "public");
+        $data["profile_picture"] = $filePath;
 
         $user = User::create($data);
         auth()->login($user);

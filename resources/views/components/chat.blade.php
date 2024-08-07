@@ -8,7 +8,13 @@
             <div class="d-flex align-items-center gap-2">
                 <img src="/img/chat/female_avatar.svg" alt="X's profile picture" class="bg-white rounded-circle"
                     height="45" width="45">
-                <p class="m-0 text-white fw-bold">{{ $chat->name }}</p>
+                <p class="m-0 text-white fw-bold">
+                    @isset($chat)
+                        {{ $chat->name }}
+                    @else
+                        Nothing
+                    @endisset
+                </p>
             </div>
             <button class="border-0 bg-transparent text-white">
                 <i class="bx bx-dots-horizontal-rounded bx-md"></i>

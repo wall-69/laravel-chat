@@ -10,8 +10,8 @@
                     <div class="d-flex flex-column gap-5">
                         {{-- Profile card --}}
                         <div class="px-3 py-2 bg-primary rounded-4 shadow d-flex gap-2">
-                            <img src="/img/chat/female_avatar.svg" alt="X's profile picture" class="bg-white rounded-circle"
-                                height="80" width="80">
+                            <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="X's profile picture"
+                                class="bg-white rounded-circle" height="80" width="80">
                             <div class="text-white">
                                 <p class="fs-4 fw-bold m-0">{{ $user->nickname }}</p>
                                 <p class="m-0 fw-light">joined {{ $user->created_at->format('m.d.Y') }}</p>
@@ -21,7 +21,8 @@
 
                         @if (auth()->check() && auth()->user()->nickname == $user->nickname)
                             {{-- Settings --}}
-                            <form class="px-5 py-4 bg-secondary rounded-4 d-flex flex-column gap-2">
+                            <form class="px-5 py-4 bg-secondary rounded-4 d-flex flex-column gap-2"
+                                enctype="multipart/form-data">
                                 <h3
                                     class="text-center text-white fw-normal border-bottom border-divider pb-1 border-opacity-25">
                                     Settings
@@ -117,9 +118,10 @@
                                     @method('POST')
                                     @csrf
 
-                                    <input type="hidden" name="users[]" value="{{ auth()->user()->id }}">
-                                    <input type="hidden" name="users[]" value="{{ $user->id }}">
-
+                                    @auth
+                                        <input type="hidden" name="users[]" value="{{ auth()->user()->id }}">
+                                        <input type="hidden" name="users[]" value="{{ $user->id }}">
+                                    @endauth
 
                                     <button type="submit"
                                         class="border-0 bg-transparent d-flex align-items-center gap-2 text-white">
