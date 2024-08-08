@@ -35,7 +35,7 @@ class UserController extends Controller
 
         // Profile picture
         $filePath = $request->file("profile_picture")->store("img/pfp", "public");
-        $data["profile_picture"] = $filePath;
+        $data["profile_picture"] = "storage/" . $filePath;
 
         $user = User::create($data);
         auth()->login($user);

@@ -10,7 +10,7 @@
                     <div class="d-flex flex-column gap-5">
                         {{-- Profile card --}}
                         <div class="px-3 py-2 bg-primary rounded-4 shadow d-flex gap-2">
-                            <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="X's profile picture"
+                            <img src="{{ asset($user->profile_picture) }}" alt="X's profile picture"
                                 class="bg-white rounded-circle" height="80" width="80">
                             <div class="text-white">
                                 <p class="fs-4 fw-bold m-0">{{ $user->nickname }}</p>

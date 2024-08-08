@@ -13,11 +13,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'nickname' => 'frajer',
+            'email' => 'a@a.a',
+            "password" => '$2y$12$cVFF9K.gLEZv.KqpeV0V5OUyaauXPAr41xeZIbb6qv47FRJBfjw3q',
+            "profile_picture" => "storage/img/pfp/Kkc4sWiAT8zBkLCbgAF7SwkqBRLkONvyqF9G4WgU.png",
+        ]);
+        User::factory()->create([
+            'nickname' => 'netusim',
+            'email' => 'b@b.b',
+            "password" => '$2y$12$cVFF9K.gLEZv.KqpeV0V5OUyaauXPAr41xeZIbb6qv47FRJBfjw3q',
+            "profile_picture" => "storage/img/pfp/FghEZYNknYU3iVY4kN7Oq7uSqtMl33GGICwm0AF5.jpg",
         ]);
     }
 }
