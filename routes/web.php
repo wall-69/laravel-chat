@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
+// Home
 Route::controller(HomeController::class)->group(function () {
     Route::get("/", "index")->name("index");
 
@@ -14,6 +15,7 @@ Route::controller(HomeController::class)->group(function () {
     });
 });
 
+// User
 Route::controller(UserController::class)->name("users.")->group(function () {
     Route::get("/profile/{nickname}", "show")->name("show");
 
@@ -27,10 +29,16 @@ Route::controller(UserController::class)->name("users.")->group(function () {
     });
 });
 
+// Chat
 Route::controller(ChatController::class)->group(function () {
     Route::middleware("auth")->group(function () {
         Route::get("/chat", "index")->name("chat.index");
 
         Route::post("/chat/create", "create")->name("chat.create");
     });
+});
+
+// Fallback
+Route::fallback(function () {
+    return redirect(route("index"));
 });
