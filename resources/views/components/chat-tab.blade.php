@@ -10,12 +10,12 @@
         {{-- Profile Name --}}
         <p class="m-0 text-white fw-bold">{{ $chat->name }}</p>
         {{-- Last message --}}
-        <p class="m-0 text-white fw-light small text-truncate">sarah45:
-            lmao xd fr fr fr
-            fr LOOL
-            MAXDX
-            XDDXDD SLN
-            LDSLJ LKSJ KLDJSLK
+        <p class="m-0 text-white fw-light small text-truncate">
+            @isset($lastMessage)
+                {{ $lastMessage->user()->nickname }}: {{ $lastMessage->content }}
+            @else
+                No messages sent yet.
+            @endisset
         </p>
     </div>
 </div>
