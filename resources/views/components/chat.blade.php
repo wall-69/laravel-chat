@@ -23,14 +23,19 @@
             </div>
 
             {{-- Input --}}
-            <div class="input-group shadow rounded-5">
+            <form action="{{ route('message.create', ['chatId' => $chat->chat_id]) }}" method="POST"
+                class="input-group shadow rounded-5">
+                @method('POST')
+                @csrf
+
                 <input type="text" name="message"
-                    class="form-control py-2 border border-start-0 border-divider border-opacity-25 bg-primary text-white rounded-start-4">
+                    class="form-control py-2 border border-start-0 border-divider border-opacity-25 bg-primary text-white rounded-start-4"
+                    required>
                 <button type="submit"
                     class="btn btn-accent text-white fw-bold border border-divider border-opacity-25 rounded-end-4 px-4">
                     Send
                 </button>
-            </div>
+            </form>
         </div>
     @else
         <div class="d-flex h-100 align-items-center justify-content-center">

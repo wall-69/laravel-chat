@@ -13,6 +13,11 @@ class Chat extends Model
         "name", "is_private"
     ];
 
+    public function userChats()
+    {
+        return $this->hasMany(UserChat::class);
+    }
+
     public function messages()
     {
         return $this->hasMany(Message::class);
