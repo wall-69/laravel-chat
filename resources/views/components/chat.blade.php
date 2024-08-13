@@ -1,16 +1,15 @@
-{{-- namiesto user musi byt chat, chat bude mat users list & chat name --}}
-@props(['chat', 'messages'])
+@props(['userChat'])
 
 <div class="gap-2 m-0 p-2 bg-chat rounded-3 shadow h-100">
-    @isset($chat)
+    @isset($userChat)
         <div class="container py-3 d-flex flex-column h-100">
             {{-- Chat info --}}
             <div class="container border-bottom border-divider border-opacity-25 pb-2 d-flex justify-content-between">
                 <div class="d-flex align-items-center gap-2">
-                    <img src="{{ asset($chat->picture) }}" alt="X's profile picture" class="bg-white rounded-circle"
+                    <img src="{{ asset($userChat->picture) }}" alt="X's profile picture" class="bg-white rounded-circle"
                         height="45" width="45">
                     <p class="m-0 text-white fw-bold">
-                        {{ $chat->name }}
+                        {{ $userChat->name }}
                     </p>
                 </div>
                 <button class="border-0 bg-transparent text-white">
@@ -20,10 +19,17 @@
 
             {{-- Chat --}}
             <div class="d-flex flex-column py-2 overflow-y-scroll px-3 mt-auto">
+                @foreach ($userChat->chat->messages as $message)
+                    @if ($message->user_id == auth()->user()->id)
+                        <x-chat-sent-message :message="$message->content" />
+                    @else
+                        <x-chat-received-message :userId="$message->user_id" :message="$message->content" />
+                    @endif
+                @endforeach
             </div>
 
             {{-- Input --}}
-            <form action="{{ route('message.create', ['chatId' => $chat->chat_id]) }}" method="POST"
+            <form action="{{ route('message.create', ['chatId' => $userChat->chat_id]) }}" method="POST"
                 class="input-group shadow rounded-5">
                 @method('POST')
                 @csrf

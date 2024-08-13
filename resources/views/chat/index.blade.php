@@ -11,7 +11,7 @@
                     @endforeach
                 </div>
                 <div class="col-9 mh-100">
-                    <x-chat :chat="$currentChat" />
+                    <x-chat :userChat="$currentChat" />
                 </div>
             </div>
         </div>
