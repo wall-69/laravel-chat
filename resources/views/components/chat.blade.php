@@ -18,7 +18,7 @@
             </div>
 
             {{-- Chat --}}
-            <div class="d-flex flex-column py-2 overflow-y-scroll px-3 mt-auto">
+            <div class="d-flex flex-column py-2 overflow-y-scroll px-3 mt-auto" id="chatContainer">
                 @foreach ($userChat->chat->messages as $message)
                     @if ($message->user_id == auth()->user()->id)
                         <x-chat-sent-message :message="$message->content" />
@@ -51,3 +51,13 @@
         </div>
     @endisset
 </div>
+
+<script>
+    const chatContainer = document.getElementById("chatContainer");
+
+    function scrollToBottom() {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    scrollToBottom()
+</script>
