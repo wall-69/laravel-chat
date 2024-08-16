@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MessageSent;
 use App\Models\Chat;
 use App\Models\Message;
 use App\Models\UserChat;
@@ -28,7 +29,11 @@ class MessageController extends Controller
                 ]
             );
 
-            return back();
+            event(new MessageSent($message));
+
+            return response()->json([
+                "success" => true
+            ]);
         } else {
             return abort(400, "Invalid chat id.");
         }
