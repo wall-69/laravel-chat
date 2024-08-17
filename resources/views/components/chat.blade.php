@@ -29,7 +29,6 @@
             </div>
 
             {{-- Input --}}
-            {{-- action="{{ route('message.create', ['chatId' => $userChat->chat_id]) }}" method="POST" --}}
             <form id="messageForm" class="input-group shadow rounded-5">
                 @method('POST')
                 @csrf
@@ -53,6 +52,9 @@
 </div>
 
 <script type="module">
+    // HACK
+    console.log(window.href);
+
     const chatContainer = document.getElementById("chatContainer");
 
     function scrollToBottom() {
@@ -64,7 +66,7 @@
     @isset($userChat)
         const parser = new DOMParser();
 
-        function addSentMessage(html) {
+        function addMessage(html) {
             let dom = parser.parseFromString(html, "text/html");
             chatContainer.appendChild(dom.querySelector("div"));
 
@@ -72,6 +74,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Send message form
             const messageForm = document.getElementById('messageForm');
             messageForm.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -90,7 +93,6 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            console.log('Message sent successfully!');
                             messageForm.reset();
                         } else {
                             console.error('An error occurred: ' + (data.message ||
@@ -103,8 +105,12 @@
             });
 
             // Broadcasts
-            Echo.channel("chats.{{ $userChat->chat_id }}").listen("MessageSent", (e) => {
-                addSentMessage(e.html);
+            Echo.private("chats.{{ $userChat->chat_id }}").listen("MessageSent", (e) => {
+                if (e.senderId == {{ auth()->user()->id }}) {
+                    addMessage(e.htmlSent);
+                } else {
+                    addMessage(e.htmlReceived);
+                }
             });
 
         });

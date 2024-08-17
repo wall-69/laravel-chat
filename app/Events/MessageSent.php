@@ -16,17 +16,23 @@ class MessageSent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $html;
+    public int $senderId;
+    public string $htmlSent, $htmlReceived;
 
     /**
      * Create a new event instance.
      */
     public function __construct(
-        private readonly Message $message,
+        private readonly Message $message
     ) {
+        $this->senderId = $message->user->id;
 
-        $this->html = View::make('components.chat-sent-message', [
-            'message' => $message->content,
+        $this->htmlSent = View::make("components.chat-sent-message", [
+            "message" => $message->content,
+        ])->render();
+        $this->htmlReceived = View::make("components.chat-received-message", [
+            "userId" => $this->senderId,
+            "message" => $message->content,
         ])->render();
     }
 
@@ -38,7 +44,7 @@ class MessageSent implements ShouldBroadcastNow
     public function broadcastOn(): array
     {
         return [
-            new Channel('chats.' . $this->message->chat_id),
+            new PrivateChannel('chats.' . $this->message->chat_id),
         ];
     }
 }
