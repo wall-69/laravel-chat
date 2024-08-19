@@ -42,7 +42,7 @@ Route::controller(ChatController::class)->group(function () {
 // Message
 Route::controller(MessageController::class)->group(function () {
     Route::middleware("auth")->group(function () {
-        Route::post("/chat/{chatId}/create", "create")->name("message.create");
+        Route::post("/chat/{chatId}/message/create", "create")->name("message.create");
     });
 });
 

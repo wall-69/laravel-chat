@@ -2,9 +2,9 @@
 
 <div class="gap-2 m-0 p-2 bg-chat rounded-3 shadow h-100">
     @isset($userChat)
-        <div class="container py-3 d-flex flex-column h-100">
+        <div class="container-lg py-3 d-flex flex-column h-100">
             {{-- Chat info --}}
-            <div class="container border-bottom border-divider border-opacity-25 pb-2 d-flex justify-content-between">
+            <div class="container-lg border-bottom border-divider border-opacity-25 pb-2 d-flex justify-content-between">
                 <div class="d-flex align-items-center gap-2">
                     <img src="{{ asset($userChat->picture) }}" alt="X's profile picture" class="bg-white rounded-circle"
                         height="45" width="45">
@@ -52,9 +52,6 @@
 </div>
 
 <script type="module">
-    // HACK
-    console.log(window.href);
-
     const chatContainer = document.getElementById("chatContainer");
 
     function scrollToBottom() {
