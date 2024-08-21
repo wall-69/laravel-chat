@@ -7,8 +7,8 @@
             <div class="row h-100 gx-0 gx-lg-5">
                 <div
                     class="d-none d-lg-block col-3 h-100 rounded-3 bg-secondary bg-gradient shadow p-0 overflow-x-scroll overflow-y-scroll">
-                    @foreach (auth()->user()->userChats as $chat)
-                        <x-chat-tab type="unread" :chat="$chat" />
+                    @foreach (auth()->user()->userChats as $userChat)
+                        <x-chat-tab type="unread" :userChat="$userChat" />
                     @endforeach
                 </div>
                 <div class="col-12 col-lg-9 mh-100">

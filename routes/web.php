@@ -34,6 +34,7 @@ Route::controller(UserController::class)->name("users.")->group(function () {
 Route::controller(ChatController::class)->group(function () {
     Route::middleware("auth")->group(function () {
         Route::get("/chat", "index")->name("chat.index");
+        Route::get("/chat/{id}", "show")->name("chat.show");
 
         Route::post("/chat/create", "create")->name("chat.create");
     });
