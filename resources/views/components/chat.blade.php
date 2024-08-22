@@ -51,65 +51,67 @@
     @endisset
 </div>
 
-<script type="module">
-    const chatContainer = document.getElementById("chatContainer");
+@push('scripts')
+    <script type="module">
+        const chatContainer = document.getElementById("chatContainer");
 
-    function scrollToBottom() {
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-    }
-
-    scrollToBottom();
-
-    @isset($userChat)
-        const parser = new DOMParser();
-
-        function addMessage(html) {
-            let dom = parser.parseFromString(html, "text/html");
-            chatContainer.appendChild(dom.querySelector("div"));
-
-            scrollToBottom();
+        function scrollToBottom() {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Send message form
-            const messageForm = document.getElementById('messageForm');
-            messageForm.addEventListener('submit', function(e) {
-                e.preventDefault();
+        scrollToBottom();
 
-                const formData = new FormData(messageForm);
-                const csrfToken = document.querySelector('input[name="_token"]').value;
 
-                fetch('{{ route('message.create', ['chatId' => $userChat->chat_id]) }}', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': csrfToken,
-                            'Accept': 'application/json',
-                        },
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            messageForm.reset();
-                        } else {
-                            console.error('An error occurred: ' + (data.message ||
-                                'Unknown error'));
-                        }
-                    })
-                    .catch(error => {
-                        console.error('An error occurred: ' + error.message);
-                    });
+        @isset($userChat)
+            const parser = new DOMParser();
+
+            function addMessage(html) {
+                let dom = parser.parseFromString(html, "text/html");
+                chatContainer.appendChild(dom.querySelector("div"));
+
+                scrollToBottom();
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                // Send message form
+                const messageForm = document.getElementById('messageForm');
+                messageForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(messageForm);
+                    const csrfToken = document.querySelector('input[name="_token"]').value;
+
+                    fetch('{{ route('message.create', ['chatId' => $userChat->chat_id]) }}', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json',
+                            },
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                messageForm.reset();
+                            } else {
+                                console.error('An error occurred: ' + (data.message ||
+                                    'Unknown error'));
+                            }
+                        })
+                        .catch(error => {
+                            console.error('An error occurred: ' + error.message);
+                        });
+                });
+
+                // Broadcasts
+                Echo.private("chats.{{ $userChat->chat_id }}").listen("MessageSent", (e) => {
+                    if (e.senderId == {{ auth()->user()->id }}) {
+                        addMessage(e.htmlSent);
+                    } else {
+                        addMessage(e.htmlReceived);
+                    }
+                });
             });
-
-            // Broadcasts
-            Echo.private("chats.{{ $userChat->chat_id }}").listen("MessageSent", (e) => {
-                if (e.senderId == {{ auth()->user()->id }}) {
-                    addMessage(e.htmlSent);
-                } else {
-                    addMessage(e.htmlReceived);
-                }
-            });
-
-        });
-    @endisset
-</script>
+        @endisset
+    </script>
+@endpush

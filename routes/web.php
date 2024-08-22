@@ -43,6 +43,8 @@ Route::controller(ChatController::class)->group(function () {
 // Message
 Route::controller(MessageController::class)->group(function () {
     Route::middleware("auth")->group(function () {
+        Route::get("/chat/{chatId}/messages", "get")->name("messages.get");
+
         Route::post("/chat/{chatId}/message/create", "create")->name("message.create");
     });
 });

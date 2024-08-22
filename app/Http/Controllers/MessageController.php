@@ -12,6 +12,15 @@ use function Laravel\Prompts\error;
 
 class MessageController extends Controller
 {
+
+    public function get(int $chatId)
+    {
+        // TODO: chat does not exist check
+        $chat = Chat::find($chatId);
+
+        return response()->json($chat->messages);
+    }
+
     public function create(Request $request, int $chatId)
     {
         $data = $request->validate([

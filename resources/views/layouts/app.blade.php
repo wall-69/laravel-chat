@@ -14,6 +14,7 @@
 
 <body class="d-flex flex-column vh-100">
     @yield('content')
+    @stack('scripts')
 </body>
 
 </html>
