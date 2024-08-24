@@ -37,15 +37,19 @@ Route::controller(ChatController::class)->group(function () {
         Route::get("/chat/{id}", "show")->name("chat.show");
 
         Route::post("/chat/create", "create")->name("chat.create");
+
+        // API
+        Route::get("/chat/{id}/get", "getChat")->name("chat.get");
     });
 });
 
 // Message
 Route::controller(MessageController::class)->group(function () {
     Route::middleware("auth")->group(function () {
-        Route::get("/chat/{chatId}/messages", "get")->name("messages.get");
-
         Route::post("/chat/{chatId}/message/create", "create")->name("message.create");
+
+        // API
+        Route::get("/chat/{chatId}/messages", "get")->name("messages.get");
     });
 });
 

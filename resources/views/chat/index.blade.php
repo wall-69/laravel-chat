@@ -11,7 +11,7 @@
                         <x-chat-tab type="unread" :userChat="$userChat" />
                     @endforeach
                 </div>
-                <div class="col-12 col-lg-9 mh-100">
+                <div id="chat" class="col-12 col-lg-9 mh-100">
                     <x-chat :userChat="$currentChat" />
                 </div>
             </div>
