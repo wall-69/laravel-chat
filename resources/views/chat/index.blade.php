@@ -8,11 +8,13 @@
                 <div
                     class="d-none d-lg-block col-3 h-100 rounded-3 bg-secondary bg-gradient shadow p-0 overflow-x-scroll overflow-y-scroll">
                     @foreach (auth()->user()->userChats as $userChat)
-                        <x-chat-tab type="unread" :userChat="$userChat" />
+                        {{-- <x-chat-tab type="unread" :userChat="$userChat" /> --}}
+                        <livewire:chat-tab :userChat="$userChat" />
                     @endforeach
                 </div>
                 <div id="chat" class="col-12 col-lg-9 mh-100">
-                    <x-chat :userChat="$currentChat" />
+                    {{-- <x-chat :userChat="$currentChat" /> --}}
+                    <livewire:chat :userChat="$currentChat">
                 </div>
             </div>
         </div>

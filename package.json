@@ -14,8 +14,5 @@
         "pusher-js": "^8.4.0-rc2",
         "sass": "^1.77.8",
         "vite": "^5.0"
-    },
-    "dependencies": {
-        "alpinejs": "^3.14.1"
     }
 }

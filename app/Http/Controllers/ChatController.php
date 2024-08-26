@@ -20,14 +20,6 @@ class ChatController extends Controller
         return view("chat.index", ["currentChat" => $userChat]);
     }
 
-    public function getChat(int $chatId)
-    {
-        $userChat = UserChat::find($chatId);
-        return response()->json([
-            "html" => view("components.chat", ["userChat" => $userChat])->render()
-        ]);
-    }
-
     public function create(Request $request)
     {
         // TODO: check if user/s is not blocked

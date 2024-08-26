@@ -4,6 +4,3 @@ window.axios = axios;
 window.axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
 import "./echo";
-
-import Alpine from "alpinejs";
-Alpine.start();

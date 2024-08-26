@@ -1,7 +1,7 @@
-@props(['type' => 'unread', 'userChat'])
 {{-- REPLACE div WITH SOMETHING --}}
 <div role="button" id="chat-tab-{{ $userChat->id }}"
-    class="d-flex gap-2 m-0 bg-{{ $type }}-chat-tab p-2 border-bottom border-divider text-decoration-none">
+    class="d-flex gap-2 m-0 bg-{{ $type }}-chat-tab p-2 border-bottom border-divider text-decoration-none"
+    wire:click="switchChat">
     {{-- Profile/channel Picture --}}
     <img src="{{ asset($userChat->picture) }}" alt="X's profile picture" class="bg-white rounded-circle" width="65"
         height="65">
