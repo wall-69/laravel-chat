@@ -49,7 +49,6 @@ class Chat extends Component
     public function getListeners()
     {
         return [
-            // "echo-private:chats." . $this->userChat->chat_id . ",MessageSent" => '$refresh',
             "echo-private:chats." . $this->userChat->chat_id . ",MessageSent" => 'messageSent',
         ];
     }
@@ -57,5 +56,14 @@ class Chat extends Component
     public function messageSent()
     {
         $this->dispatch("scrollToBottom");
+
+        $this->dispatch("updateChatTab")->to(ChatTab::class);
+    }
+
+    #[On("switchChat")]
+    public function switchChat(int $userChatId)
+    {
+        $this->userChat = UserChat::find($userChatId);
+        // CHECK IF CHAT EXISTS
     }
 }

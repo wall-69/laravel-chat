@@ -19,11 +19,11 @@
 
             {{-- Chat --}}
             <div id="chatContainer" class="d-flex flex-column py-2 overflow-y-scroll px-3 mt-auto">
-                @foreach ($userChat->chat->messages as $message)
+                @foreach ($userChat->chat->messages()->with('user')->get() as $message)
                     @if ($message->user_id == auth()->user()->id)
                         <x-chat-sent-message :message="$message->content" />
                     @else
-                        <x-chat-received-message :userId="$message->user_id" :message="$message->content" />
+                        <x-chat-received-message :user="$message->user" :message="$message->content" />
                     @endif
                 @endforeach
             </div>
@@ -58,7 +58,6 @@
     function scrollToBottom() {
         chatContainer.scrollTo({
             top: chatContainer.scrollHeight,
-            behavior: "smooth"
         });
     }
 

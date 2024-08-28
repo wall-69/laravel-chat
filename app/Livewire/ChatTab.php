@@ -14,7 +14,15 @@ class ChatTab extends Component
         return view('livewire.chat-tab');
     }
 
+    public function getListeners()
+    {
+        return [
+            "updateChatTab" => '$refresh'
+        ];
+    }
+
     public function switchChat()
     {
+        $this->dispatch("switchChat", $this->userChat->id)->to(Chat::class);
     }
 }
