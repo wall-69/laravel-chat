@@ -2,12 +2,13 @@
 
 namespace App\Livewire;
 
+use App\Models\UserChat;
 use Livewire\Component;
 
 class ChatTab extends Component
 {
-    public $type = "unread";
-    public $userChat;
+    public string $type = "unread";
+    public UserChat $userChat;
 
     public function render()
     {

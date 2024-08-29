@@ -33,9 +33,10 @@
                 @method('POST')
                 @csrf
 
-                <input type="text" name="message" wire:model="message"
+                <input type="text" wire:model="sendMessageForm.message"
                     class="form-control py-2 border border-start-0 border-divider border-opacity-25 bg-primary text-white rounded-start-4"
                     required>
+
                 <button type="submit"
                     class="btn btn-accent text-white fw-bold border border-divider border-opacity-25 rounded-end-4 px-4">
                     Send
@@ -58,6 +59,7 @@
     function scrollToBottom() {
         chatContainer.scrollTo({
             top: chatContainer.scrollHeight,
+            behavior: "smooth"
         });
     }
 

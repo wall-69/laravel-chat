@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Events\MessageSent;
 use App\Http\Controllers\MessageController;
+use App\Livewire\Forms\SendMessageForm;
 use App\Models\Message;
 use App\Models\UserChat;
 use Livewire\Attributes\On;
@@ -12,10 +13,9 @@ use Livewire\Component;
 
 class Chat extends Component
 {
-    public $userChat;
+    public UserChat $userChat;
 
-    #[Validate("required")]
-    public $message = "";
+    public SendMessageForm $sendMessageForm;
 
     public function render()
     {
@@ -24,25 +24,7 @@ class Chat extends Component
 
     public function sendMessage()
     {
-        $chatId = $this->userChat->chat->id;
-
-        // Check, if chat id is valid one and if user is in the chat
-        $validChat = UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chatId)->exists();
-        if ($validChat) {
-            $message = Message::create(
-                [
-                    "user_id" => auth()->user()->id,
-                    "chat_id" => $chatId,
-                    "content" => $this->message
-                ]
-            );
-
-            event(new MessageSent($message));
-
-            $this->message = "";
-        } else {
-            return abort(400, "Invalid chat id.");
-        }
+        $this->sendMessageForm->store($this->userChat->chat->id);
     }
 
     // Laravel Echo
@@ -57,13 +39,18 @@ class Chat extends Component
     {
         $this->dispatch("scrollToBottom");
 
-        $this->dispatch("updateChatTab")->to(ChatTab::class);
+        $this->dispatch("updateChatTab", $this->userChat->id)->to(ChatTab::class);
     }
 
     #[On("switchChat")]
     public function switchChat(int $userChatId)
     {
-        $this->userChat = UserChat::find($userChatId);
-        // CHECK IF CHAT EXISTS
+        $userChat = UserChat::find($userChatId);
+
+        if ($userChat) {
+            $this->userChat = UserChat::find($userChatId);
+        } else {
+            abort(400, "Invalid chat id.");
+        }
     }
 }
