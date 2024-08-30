@@ -1,5 +1,3 @@
-{{-- @props(['userChat']) --}}
-
 <div class="gap-2 m-0 p-2 bg-chat rounded-3 shadow h-100">
     @isset($userChat)
         <div class="container-lg py-3 d-flex flex-column h-100">
@@ -12,11 +10,17 @@
                         {{ $userChat->name }}
                     </p>
                 </div>
-                <button class="border-0 bg-transparent text-white">
+                <button class="border-0 bg-transparent text-white ms-auto">
                     <i class="bx bx-dots-horizontal-rounded bx-md"></i>
                 </button>
             </div>
 
+            {{-- Chat loading spinner --}}
+            <div id="chatLoadingSpinner" class="d-none justify-content-center align-items-center mt-auto mb-auto">
+                <div class="spinner-border text-white" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
             {{-- Chat --}}
             <div id="chatContainer" class="d-flex flex-column py-2 overflow-y-scroll px-3 mt-auto">
                 @foreach ($userChat->chat->messages()->with('user')->get() as $message)
@@ -50,11 +54,11 @@
             </h3>
         </div>
     @endisset
-
 </div>
 
 <script>
     const chatContainer = document.getElementById("chatContainer");
+    const chatLoadingSpinner = document.getElementById("chatLoadingSpinner");
 
     function scrollToBottom() {
         chatContainer.scrollTo({
