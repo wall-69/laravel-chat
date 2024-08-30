@@ -2,13 +2,9 @@
 
 namespace App\Livewire;
 
-use App\Events\MessageSent;
-use App\Http\Controllers\MessageController;
 use App\Livewire\Forms\SendMessageForm;
-use App\Models\Message;
 use App\Models\UserChat;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 class Chat extends Component
@@ -31,7 +27,8 @@ class Chat extends Component
     public function getListeners()
     {
         return [
-            "echo-private:chats." . $this->userChat->chat_id . ",MessageSent" => 'messageSent',
+            "echo-private:chats.{$this->userChat->chat_id},MessageSent" => 'messageSent',
+            "switchChat" => "switchChat"
         ];
     }
 
@@ -42,13 +39,12 @@ class Chat extends Component
         $this->dispatch("updateChatTab", $this->userChat->id)->to(ChatTab::class);
     }
 
-    #[On("switchChat")]
     public function switchChat(int $userChatId)
     {
         $userChat = UserChat::find($userChatId);
 
         if ($userChat) {
-            $this->userChat = UserChat::find($userChatId);
+            $this->userChat = $userChat;
         } else {
             abort(400, "Invalid chat id.");
         }

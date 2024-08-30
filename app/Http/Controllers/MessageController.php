@@ -12,7 +12,4 @@ use function Laravel\Prompts\error;
 
 class MessageController extends Controller
 {
-    public function create(string $message, int $chatId)
-    {
-    }
 }

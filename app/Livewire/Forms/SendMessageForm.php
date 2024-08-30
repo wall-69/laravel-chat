@@ -5,12 +5,13 @@ namespace App\Livewire\Forms;
 use App\Events\MessageSent;
 use App\Models\Message;
 use App\Models\UserChat;
+use Livewire\Attributes\Rule;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
 
 class SendMessageForm extends Form
 {
-    #[Validate("required|min:1")]
+    #[Rule("required|min:1")]
     public $message = "";
 
     public function store(int $chatId)

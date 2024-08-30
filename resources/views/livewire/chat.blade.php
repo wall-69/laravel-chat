@@ -15,12 +15,6 @@
                 </button>
             </div>
 
-            {{-- Chat loading spinner --}}
-            <div id="chatLoadingSpinner" class="d-none justify-content-center align-items-center mt-auto mb-auto">
-                <div class="spinner-border text-white" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>
             {{-- Chat --}}
             <div id="chatContainer" class="d-flex flex-column py-2 overflow-y-scroll px-3 mt-auto">
                 @foreach ($userChat->chat->messages()->with('user')->get() as $message)
@@ -58,7 +52,6 @@
 
 <script>
     const chatContainer = document.getElementById("chatContainer");
-    const chatLoadingSpinner = document.getElementById("chatLoadingSpinner");
 
     function scrollToBottom() {
         chatContainer.scrollTo({
