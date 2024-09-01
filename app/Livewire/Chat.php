@@ -23,28 +23,22 @@ class Chat extends Component
         $this->sendMessageForm->store($this->userChat->chat->id);
     }
 
-    // Laravel Echo
-    public function getListeners()
-    {
-        return [
-            "echo-private:chats.{$this->userChat->chat_id},MessageSent" => 'messageSent',
-            "switchChat" => "switchChat"
-        ];
-    }
-
+    #[On("messageSent")]
     public function messageSent()
     {
         $this->dispatch("scrollToBottom");
-
         $this->dispatch("updateChatTab", $this->userChat->id)->to(ChatTab::class);
     }
 
+    #[On("switchChat")]
     public function switchChat(int $userChatId)
     {
+        $oldChatId  = $this->userChat->chat_id;
         $userChat = UserChat::find($userChatId);
 
         if ($userChat) {
             $this->userChat = $userChat;
+            $this->dispatch("switchChannels", oldChannel: "chats.{$oldChatId}", newChannel: "chats.{$userChat->chat_id}");
         } else {
             abort(400, "Invalid chat id.");
         }
