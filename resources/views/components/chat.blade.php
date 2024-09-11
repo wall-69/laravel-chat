@@ -1,3 +1,5 @@
+@props(['userChat'])
+
 <div class="gap-2 m-0 p-2 bg-chat rounded-3 shadow h-100">
     @isset($userChat)
         <div class="container-lg py-3 d-flex flex-column h-100">
@@ -27,11 +29,12 @@
             </div>
 
             {{-- Input --}}
-            <form class="input-group shadow rounded-5" wire:submit="sendMessage">
+            <form class="input-group shadow rounded-5" method="POST"
+                action="{{ route('messages.store', ['chatId' => $userChat->chat_id]) }}">
                 @method('POST')
                 @csrf
 
-                <input type="text" wire:model="sendMessageForm.message"
+                <input type="text" name="message"
                     class="form-control py-2 border border-start-0 border-divider border-opacity-25 bg-primary text-white rounded-start-4"
                     required>
 
@@ -48,43 +51,31 @@
             </h3>
         </div>
     @endisset
+
+    <script type="module">
+        // Echo
+        function joinPrivateChannel(channelName) {
+            Echo.private(channelName).listen("MessageSent", (e) => {
+                Livewire.dispatch("messageSent");
+            });
+        }
+
+        function switchChannels(oldChannel, newChannel) {
+            Echo.leave(oldChannel);
+            joinPrivateChannel(newChannel);
+        }
+
+        // Chat 
+        const chatContainer = document.getElementById("chatContainer");
+
+        function scrollToBottom() {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // Initial scroll
+        scrollToBottom();
+
+        // Initial echo join
+        joinPrivateChannel("chats." + {{ $userChat->chat_id }});
+    </script>
 </div>
-
-
-<script type="module">
-    // Echo
-    function joinPrivateChannel(channelName) {
-        Echo.private(channelName).listen("MessageSent", (e) => {
-            Livewire.dispatch("messageSent");
-        });
-    }
-
-    function switchChannels(oldChannel, newChannel) {
-        Echo.leave(oldChannel);
-        joinPrivateChannel(newChannel);
-    }
-
-    // Chat 
-    const chatContainer = document.getElementById("chatContainer");
-
-    function scrollToBottom() {
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-    }
-
-    document.addEventListener('livewire:init', function() {
-        Livewire.on("switchChannels", (e) => {
-            switchChannels(e.oldChannel, e.newChannel);
-        });
-
-        Livewire.on("scrollToBottom", (e) => {
-            scrollToBottom();
-        });
-    });
-
-
-    // Initial scroll
-    scrollToBottom();
-
-    // Initial echo join
-    joinPrivateChannel("chats." + {{ $userChat->chat_id }});
-</script>

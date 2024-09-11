@@ -1,3 +1,5 @@
+@props(['userChat', 'type' => 'read'])
+
 {{-- REPLACE div WITH SOMETHING --}}
 <div role="button"
     class="d-flex gap-2 m-0 bg-{{ $type }}-chat-tab p-2 border-bottom border-divider text-decoration-none"
