@@ -12,8 +12,10 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
 
-<body class="d-flex flex-column vh-100">
-    <div id="app"></div>
+<body>
+    <div id="app" class="d-flex flex-column vh-100">
+        @yield('content')
+    </div>
 </body>
 
 </html>

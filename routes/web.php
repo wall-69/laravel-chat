@@ -27,6 +27,7 @@ Route::controller(UserController::class)->name("users.")->group(function () {
 
     Route::middleware("auth")->group(function () {
         Route::post("/logout", "logout")->name("logout");
+        Route::post("/tokens/create", "createToken");
     });
 });
 
@@ -34,10 +35,12 @@ Route::controller(UserController::class)->name("users.")->group(function () {
 Route::controller(ChatController::class)->group(function () {
     Route::middleware("auth")->group(function () {
         Route::get("/chat", "index")->name("chat.index");
+        Route::get("/chat/{chatId}/last-message", "lastMessage");
 
         Route::post("/chat/create", "create")->name("chat.create");
     });
 });
+
 
 // Message
 Route::controller(MessageController::class)->group(function () {

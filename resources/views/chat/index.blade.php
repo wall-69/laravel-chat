@@ -8,7 +8,8 @@
                 <div
                     class="d-none d-lg-block col-3 h-100 rounded-3 bg-secondary bg-gradient shadow p-0 overflow-x-scroll overflow-y-scroll">
                     @foreach (auth()->user()->userChats as $userChat)
-                        <x-chat-tab :userChat="$userChat" />
+                        <chat-tab :user-chat="{{ $userChat }}" type="read"
+                            :chat-picture="'{{ asset($userChat->picture) }}'"></chat-tab>
                     @endforeach
                 </div>
                 <div id="chat" class="col-12 col-lg-9 mh-100">

@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Models\UserChat;
 use Illuminate\Http\Request;
 
+use function Laravel\Prompts\error;
+
 class ChatController extends Controller
 {
     public function index()
@@ -47,5 +49,26 @@ class ChatController extends Controller
         }
 
         return redirect(route("chat.index"));
+    }
+
+    public function lastMessage(int $chatId)
+    {
+        $chat = Chat::find($chatId);
+
+        if (!$chat) {
+            abort(404);
+        }
+
+        $lastMessage = $chat->lastMessage;
+        if (UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chatId)->exists()) {
+            return response()->json([
+                "lastMessage" => [
+                    "nickname" => $lastMessage->user->nickname,
+                    "content" => $lastMessage->content
+                ]
+            ]);
+        }
+
+        abort(401);
     }
 }
