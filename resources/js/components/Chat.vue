@@ -9,7 +9,6 @@
                     :key="userChat.id"
                     :user-chat="userChat"
                     type="read"
-                    :chat-picture="asset(userChat.picture)"
                 >
                 </chat-tab>
             </div>
@@ -22,8 +21,6 @@
 </template>
 
 <script setup>
-import { asset } from "../helper";
-
 const props = defineProps({
     currentChat: Object,
     userChats: Array,

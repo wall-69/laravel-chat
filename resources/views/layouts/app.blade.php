@@ -9,7 +9,7 @@
     <title>LaraChat</title>
 
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    @routes
+    @routes {{-- ZiggyJS --}}
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
 

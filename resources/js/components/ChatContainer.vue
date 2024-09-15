@@ -75,6 +75,7 @@
 </template>
 
 <script setup>
+import { asset } from "../helper";
 import { onMounted, ref } from "vue";
 
 // Props

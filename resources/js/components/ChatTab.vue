@@ -9,7 +9,7 @@
     >
         <!-- Chat Picture -->
         <img
-            :src="chatPicture"
+            :src="asset(userChat.picture)"
             alt="X's profile picture"
             class="bg-white rounded-circle"
             width="65"
@@ -34,7 +34,7 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
-import { csrf } from "../helper";
+import { csrf, asset } from "../helper";
 
 // Props
 const props = defineProps({
