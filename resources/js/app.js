@@ -3,10 +3,14 @@ import * as bootstrap from "bootstrap";
 
 // Vue
 import { createApp } from "vue";
+import Chat from "./components/Chat.vue";
 import ChatTab from "./components/ChatTab.vue";
+import ChatContainer from "./components/ChatContainer.vue";
 
 const app = createApp();
 
+app.component("chat", Chat);
 app.component("chat-tab", ChatTab);
+app.component("chat-container", ChatContainer);
 
 app.mount("#app");
