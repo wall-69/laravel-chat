@@ -3,7 +3,8 @@
 @section('content')
     <x-chat-nav />
     <main class="flex-shrink-0 h-100">
-        <chat :current-chat="{{ $currentChat }}" :user-chats="{{ auth()->user()->userChats }}"></chat>
+        <chat :current-user="{{ auth()->user() }}" :current-chat="{{ $currentChat }}"
+            :user-chats="{{ auth()->user()->userChats }}"></chat>
     </main>
     <x-footer />
 @endsection

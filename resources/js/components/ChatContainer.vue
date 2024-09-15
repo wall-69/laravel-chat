@@ -1,20 +1,23 @@
 <template>
     <div class="gap-2 m-0 p-2 bg-chat rounded-3 shadow h-100">
-        <div v-if="userChat" class="container-lg py-3 d-flex flex-column h-100">
+        <div
+            v-if="currentChat"
+            class="container-lg py-3 d-flex flex-column h-100"
+        >
             <!-- Chat info -->
             <div
                 class="container-lg border-bottom border-divider border-opacity-25 pb-2 d-flex justify-content-between"
             >
                 <div class="d-flex align-items-center gap-2">
                     <img
-                        :src="asset(userChat.picture)"
+                        :src="asset(currentChat.picture)"
                         alt="X's profile picture"
                         class="bg-white rounded-circle"
                         height="45"
                         width="45"
                     />
                     <p class="m-0 text-white fw-bold">
-                        {{ userChat.name }}
+                        {{ currentChat.name }}
                     </p>
                 </div>
                 <button class="border-0 bg-transparent text-white ms-auto">
@@ -27,22 +30,27 @@
                 ref="chatContainer"
                 class="d-flex flex-column py-2 overflow-y-scroll px-3 mt-auto"
             >
-                <!-- @foreach (userChat.chat->messages()->with('user')->get() as
-                $message) @if ($message->user_id == auth()->user()->id)
-                <x-chat-sent-message :message="$message->content" />
-                @else
-                <x-chat-received-message
-                    :user="$message->user"
-                    :message="$message->content"
-                />
-                @endif @endforeach -->
+                <template v-for="message in messages">
+                    <!-- IF message.user_id == currentUser.id -->
+                    <chat-sent-message
+                        v-if="message.user_id == currentUser.id"
+                        :message="message.content"
+                    ></chat-sent-message>
+
+                    <!-- ELSE -->
+                    <chat-received-message
+                        v-else
+                        :user="message.user"
+                        :message="message.content"
+                    ></chat-received-message>
+                </template>
             </div>
 
             <!-- Input -->
             <form
                 class="input-group shadow rounded-5"
                 method="POST"
-                :action="route('messages.store', userChat.chat_id)"
+                :action="route('messages.store', currentChat.chat_id)"
             >
                 <input
                     type="text"
@@ -75,18 +83,17 @@
 </template>
 
 <script setup>
-import { asset } from "../helper";
-import { onMounted, ref } from "vue";
+import { asset, csrf } from "../helper";
+import { inject, nextTick, onMounted, ref, watch } from "vue";
 
-// Props
-const props = defineProps({
-    userChat: Object,
-});
+const messages = ref([]);
+const currentChat = inject("currentChat");
+const currentUser = inject("currentUser");
 
 // Echo
 function joinPrivateChannel(channelName) {
     Echo.private(channelName).listen("MessageSent", (e) => {
-        Livewire.dispatch("messageSent");
+        // i dont fucking know
     });
 }
 
@@ -104,13 +111,50 @@ function switchChannels(oldChannel, newChannel) {
     joinPrivateChannel(newChannel);
 }
 
-onMounted(() => {
-    // Initial scroll
-    scrollToBottom();
+async function getMessages() {
+    try {
+        await csrf();
 
-    // Initial echo join
-    if (props.userChat && props.userChat.value) {
-        joinPrivateChannel("chats." + props.userChat.value.chat_id);
+        const res = await axios.get(
+            "/chat/" + currentChat.value.chat_id + "/messages"
+        );
+
+        return res.data.messages;
+    } catch (error) {
+        console.error("Get messages request error: " + error);
+    }
+}
+
+watch(
+    () => currentChat.value,
+    async (newChat, oldChat) => {
+        if (newChat) {
+            messages.value = await getMessages();
+
+            nextTick(() => {
+                scrollToBottom();
+            });
+
+            switchChannels(
+                "chats." + oldChat.chat_id,
+                "chats." + newChat.chat_id
+            );
+        }
+    }
+);
+
+onMounted(async () => {
+    if (currentChat && currentChat.value) {
+        // Load messages
+        messages.value = await getMessages();
+
+        // Initial scroll
+        nextTick(() => {
+            scrollToBottom();
+        });
+
+        // Initial echo join
+        joinPrivateChannel("chats." + currentChat.value.chat_id);
     }
 });
 </script>

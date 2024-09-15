@@ -1,6 +1,7 @@
 <template>
     <div
         role="button"
+        @click="switchChat(userChat.id)"
         class="d-flex gap-2 m-0 p-2 border-bottom border-divider text-decoration-none"
         :class="{
             'bg-read-chat-tab': type == 'read',
@@ -43,6 +44,9 @@ const props = defineProps({
     chatPicture: String,
 });
 
+// Emits
+const emits = defineEmits(["switchChat"]);
+
 // Last message
 const lastMessage = ref("");
 
@@ -66,13 +70,8 @@ async function getLastMessage() {
     return "No messages sent yet.";
 }
 
-async function switchChat() {
-    await csrf();
-
-    try {
-    } catch (error) {
-        console.error("Chat switch request error: " + error);
-    }
+function switchChat(id) {
+    emits("switchChat", id);
 }
 
 // Events

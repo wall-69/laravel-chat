@@ -37,4 +37,21 @@ class MessageController extends Controller
             abort(400, "Invalid chat id.");
         }
     }
+
+    public function messages(int $chatId)
+    {
+        $chat = Chat::find($chatId);
+
+        if (!$chat) {
+            abort(404);
+        }
+
+        if (UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chatId)->exists()) {
+            return response()->json([
+                "messages" => $chat->messages()->with('user')->get()
+            ]);
+        }
+
+        abort(401);
+    }
 }
