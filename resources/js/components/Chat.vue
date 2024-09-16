@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { onMounted, provide, ref } from "vue";
+import { provide, ref } from "vue";
 import { csrf } from "../helper";
 
 const props = defineProps({
@@ -34,6 +34,8 @@ const currentChat = ref(props.currentChat);
 
 provide("currentUser", props.currentUser);
 provide("currentChat", currentChat);
+
+const switchingChat = ref(false);
 
 async function getUserChat(id) {
     try {
@@ -48,6 +50,18 @@ async function getUserChat(id) {
 }
 
 async function handleSwitchChat(id) {
+    // Dont allow multiple chat switches at once
+    if (switchingChat.value) {
+        return;
+    }
+
+    // Dont load already loaded chat
+    if (id == currentChat.value.id) {
+        return;
+    }
+
+    switchingChat.value = true;
     currentChat.value = await getUserChat(id);
+    switchingChat.value = false;
 }
 </script>

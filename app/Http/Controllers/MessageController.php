@@ -38,17 +38,21 @@ class MessageController extends Controller
         }
     }
 
-    public function messages(int $chatId)
+    public function messages(Request $request, int $chatId)
     {
-        $chat = Chat::find($chatId);
+        $chat = Chat::findOrFail($chatId);
+        $page = $request->query("page", 1);
 
-        if (!$chat) {
-            abort(404);
-        }
 
         if (UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chatId)->exists()) {
             return response()->json([
-                "messages" => $chat->messages()->with('user')->get()
+                "messages" => $chat
+                    ->messages()->with('user')
+                    ->latest()
+                    ->skip(($page - 1) * 15)
+                    ->take(15)
+                    ->get()
+                    ->reverse()->values()
             ]);
         }
 

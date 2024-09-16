@@ -28,9 +28,24 @@
             <!-- Chat -->
             <div
                 ref="chatContainer"
-                class="d-flex flex-column py-2 overflow-y-scroll px-3 mt-auto"
+                @scroll="handleScroll"
+                class="d-flex flex-column py-2 overflow-y-scroll px-3"
+                :class="{
+                    'mt-auto': messages.length > 0,
+                }"
             >
-                <template v-for="message in messages">
+                <div
+                    v-show="messages.length == 0 || loadingMessages"
+                    class="spinner-border text-white mx-auto"
+                    :class="{
+                        'mt-5': messages.length == 0,
+                        'p-2-5': loadingMessages,
+                    }"
+                    role="status"
+                >
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <template v-show="messages" v-for="message in messages">
                     <!-- IF message.user_id == currentUser.id -->
                     <chat-sent-message
                         v-if="message.user_id == currentUser.id"
@@ -49,6 +64,9 @@
             <!-- Input -->
             <form
                 class="input-group shadow rounded-5"
+                :class="{
+                    'mt-auto': messages.length == 0,
+                }"
                 method="POST"
                 :action="route('messages.store', currentChat.chat_id)"
             >
@@ -90,6 +108,11 @@ const messages = ref([]);
 const currentChat = inject("currentChat");
 const currentUser = inject("currentUser");
 
+const oldScrollTop = ref(0);
+const oldScrollHeight = ref(0);
+const loadingMessages = ref(false);
+const page = ref(1);
+
 // Echo
 function joinPrivateChannel(channelName) {
     Echo.private(channelName).listen("MessageSent", (e) => {
@@ -111,17 +134,41 @@ function switchChannels(oldChannel, newChannel) {
     joinPrivateChannel(newChannel);
 }
 
+async function handleScroll() {
+    if (chatContainer.value.scrollTop == 0 && !loadingMessages.value) {
+        messages.value = [...(await getMessages()), ...messages.value];
+
+        await nextTick();
+
+        chatContainer.value.scrollTop =
+            chatContainer.value.scrollHeight -
+            oldScrollHeight.value +
+            oldScrollTop.value;
+    }
+}
+
 async function getMessages() {
     try {
+        loadingMessages.value = true;
+
         await csrf();
 
         const res = await axios.get(
-            "/chat/" + currentChat.value.chat_id + "/messages"
+            "/chat/" + currentChat.value.chat_id + "/messages",
+            {
+                params: { page: page.value },
+            }
         );
+        page.value += 1;
+
+        oldScrollTop.value = chatContainer.value.scrollTop;
+        oldScrollHeight.value = chatContainer.value.scrollHeight;
 
         return res.data.messages;
     } catch (error) {
         console.error("Get messages request error: " + error);
+    } finally {
+        loadingMessages.value = false;
     }
 }
 
@@ -129,6 +176,9 @@ watch(
     () => currentChat.value,
     async (newChat, oldChat) => {
         if (newChat) {
+            page.value = 1;
+
+            messages.value = [];
             messages.value = await getMessages();
 
             nextTick(() => {

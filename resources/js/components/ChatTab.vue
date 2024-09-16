@@ -2,7 +2,7 @@
     <div
         role="button"
         @click="switchChat(userChat.id)"
-        class="d-flex gap-2 m-0 p-2 border-bottom border-divider text-decoration-none"
+        class="d-flex gap-2 m-0 p-2 border-bottom border-divider text-decoration-none user-select-none"
         :class="{
             'bg-read-chat-tab': type == 'read',
             'bg-unread-chat-tab': type == 'unread',
@@ -15,11 +15,14 @@
             class="bg-white rounded-circle"
             width="65"
             height="65"
+            draggable="false"
         />
 
         <div class="d-flex flex-column mw-0 placeholder-glow">
             <!-- Profile Name -->
-            <p class="m-0 text-white fw-bold">{{ userChat.name }}</p>
+            <p class="m-0 text-white fw-bold">
+                {{ userChat.name }}
+            </p>
             <!-- Last message -->
             <p
                 class="m-0 text-white fw-light small text-truncate"
@@ -35,7 +38,7 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
-import { csrf, asset } from "../helper";
+import { asset } from "../helper";
 
 // Props
 const props = defineProps({
