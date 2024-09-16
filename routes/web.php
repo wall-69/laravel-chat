@@ -27,28 +27,27 @@ Route::controller(UserController::class)->name("users.")->group(function () {
 
     Route::middleware("auth")->group(function () {
         Route::post("/logout", "logout")->name("logout");
-        Route::post("/tokens/create", "createToken");
     });
 });
 
 // Chat
-Route::controller(ChatController::class)->group(function () {
+Route::controller(ChatController::class)->name("chat.")->group(function () {
     Route::middleware("auth")->group(function () {
-        Route::get("/chat", "index")->name("chat.index");
+        Route::get("/chat", "index")->name("index");
         Route::get("/chat/{chatId}", "userChat");
         Route::get("/chat/{chatId}/last-message", "lastMessage");
 
-        Route::post("/chat/create", "create")->name("chat.create");
+        Route::post("/chat/create", "create")->name("create");
     });
 });
 
 
 // Message
-Route::controller(MessageController::class)->group(function () {
+Route::controller(MessageController::class)->name("messages.")->group(function () {
     Route::middleware("auth")->group(function () {
         Route::get("/chat/{chatId}/messages", "messages");
 
-        Route::post("/chat/{chatId}/message/store", "store")->name("messages.store");
+        Route::post("/chat/{chatId}/message/store", "store")->name("store");
     });
 });
 

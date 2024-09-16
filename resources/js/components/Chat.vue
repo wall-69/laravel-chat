@@ -39,8 +39,6 @@ const switchingChat = ref(false);
 
 async function getUserChat(id) {
     try {
-        await csrf();
-
         const res = await axios.get("/chat/" + id);
 
         return res.data.userChat;

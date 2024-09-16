@@ -151,8 +151,6 @@ async function getMessages() {
     try {
         loadingMessages.value = true;
 
-        await csrf();
-
         const res = await axios.get(
             "/chat/" + currentChat.value.chat_id + "/messages",
             {
