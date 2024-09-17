@@ -8,8 +8,6 @@ use App\Models\Message;
 use App\Models\UserChat;
 use Illuminate\Http\Request;
 
-use function Laravel\Prompts\error;
-
 class MessageController extends Controller
 {
 
@@ -42,15 +40,15 @@ class MessageController extends Controller
     {
         $chat = Chat::findOrFail($chatId);
         $page = $request->query("page", 1);
-
+        $messagesPerPage = 15;
 
         if (UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chatId)->exists()) {
             return response()->json([
                 "messages" => $chat
                     ->messages()->with('user')
                     ->latest()
-                    ->skip(($page - 1) * 15)
-                    ->take(15)
+                    ->skip(($page - 1) * $messagesPerPage)
+                    ->take($messagesPerPage)
                     ->get()
                     ->reverse()->values()
             ]);

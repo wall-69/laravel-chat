@@ -51,18 +51,6 @@ class ChatController extends Controller
         return redirect(route("chat.index"));
     }
 
-    // TODO: create UserchatController??
-    public function userChat(int $userChatId)
-    {
-        $userChat = UserChat::findOrFail($userChatId);
-
-        // CHECK IF USER IS IN CHAT
-
-        return response()->json([
-            "userChat" => $userChat
-        ]);
-    }
-
     public function lastMessage(int $chatId)
     {
         $chat = Chat::findOrFail($chatId);

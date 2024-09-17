@@ -1,8 +1,8 @@
 <template>
-    <div class="px-2 px-lg-0 container-lg py-5 h-100">
-        <div class="row h-100 gx-0 gx-lg-5">
+    <div class="px-2 px-lg-0 container-lg py-5">
+        <div class="row gx-0 gx-lg-5">
             <div
-                class="d-none d-lg-block col-3 h-100 rounded-3 bg-secondary bg-gradient shadow p-0 overflow-x-scroll overflow-y-scroll"
+                class="d-none d-lg-block col-3 rounded-3 bg-secondary bg-gradient shadow p-0 overflow-x-scroll overflow-y-scroll"
             >
                 <chat-tab
                     v-for="userChat in userChats"
@@ -13,8 +13,11 @@
                 >
                 </chat-tab>
             </div>
-            <div id="chat" class="col-12 col-lg-9 mh-100">
-                <chat-container></chat-container>
+            <div id="chat" class="col-12 col-lg-9 vh-100">
+                <chat-container
+                    @loading-messages="handleLoadingMessages"
+                    @loaded-messages="handleLoadedMessages"
+                ></chat-container>
             </div>
         </div>
     </div>
@@ -22,7 +25,6 @@
 
 <script setup>
 import { provide, ref } from "vue";
-import { csrf } from "../helper";
 
 const props = defineProps({
     currentUser: Object,
@@ -35,31 +37,36 @@ const currentChat = ref(props.currentChat);
 provide("currentUser", props.currentUser);
 provide("currentChat", currentChat);
 
-const switchingChat = ref(false);
-
-async function getUserChat(id) {
-    try {
-        const res = await axios.get("/chat/" + id);
-
-        return res.data.userChat;
-    } catch (error) {
-        console.error("Get chat request error: " + error);
-    }
+// Loading messages logic (because I am too dumb to do it any other way rn)
+const loadingMessages = ref(false);
+function handleLoadingMessages() {
+    loadingMessages.value = true;
+}
+function handleLoadedMessages() {
+    loadingMessages.value = false;
 }
 
-async function handleSwitchChat(id) {
-    // Dont allow multiple chat switches at once
-    if (switchingChat.value) {
+function handleSwitchChat(id) {
+    // Dont allow chat switch when loading messages
+    if (loadingMessages.value) {
         return;
     }
 
     // Dont load already loaded chat
-    if (id == currentChat.value.id) {
+    if (currentChat.value.id == id) {
         return;
     }
 
-    switchingChat.value = true;
-    currentChat.value = await getUserChat(id);
-    switchingChat.value = false;
+    // Find the new user chat based on the id provided
+    const newUserChat = props.userChats.find((userChat) => {
+        return userChat.id == id;
+    });
+
+    // If id is invalid, throw error
+    if (newUserChat) {
+        currentChat.value = newUserChat;
+    } else {
+        console.error("Invalid user chat id in handleSwitchChat.");
+    }
 }
 </script>

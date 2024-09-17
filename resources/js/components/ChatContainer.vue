@@ -63,14 +63,15 @@
 
             <!-- Input -->
             <form
+                @submit.prevent="sendMessage"
                 class="input-group shadow rounded-5"
                 :class="{
                     'mt-auto': messages.length == 0,
                 }"
                 method="POST"
-                :action="route('messages.store', currentChat.chat_id)"
             >
                 <input
+                    v-model="formMessage"
                     type="text"
                     name="message"
                     class="form-control py-2 border border-start-0 border-divider border-opacity-25 bg-primary text-white rounded-start-4"
@@ -101,8 +102,10 @@
 </template>
 
 <script setup>
-import { asset, csrf } from "../helper";
+import { asset } from "../helper";
 import { inject, nextTick, onMounted, ref, watch } from "vue";
+
+const emits = defineEmits(["loadingMessages", "loadedMessages"]);
 
 const messages = ref([]);
 const currentChat = inject("currentChat");
@@ -112,6 +115,14 @@ const oldScrollTop = ref(0);
 const oldScrollHeight = ref(0);
 const loadingMessages = ref(false);
 const page = ref(1);
+
+// Send message form
+const formMessage = ref("");
+
+function sendMessage() {
+    // route('messages.store', currentChat.chat_id)
+    console.log("sendmessage");
+}
 
 // Echo
 function joinPrivateChannel(channelName) {
@@ -135,7 +146,11 @@ function switchChannels(oldChannel, newChannel) {
 }
 
 async function handleScroll() {
-    if (chatContainer.value.scrollTop == 0 && !loadingMessages.value) {
+    if (
+        chatContainer.value.scrollTop == 0 &&
+        !loadingMessages.value &&
+        page.value != -1
+    ) {
         messages.value = [...(await getMessages()), ...messages.value];
 
         await nextTick();
@@ -151,18 +166,21 @@ async function getMessages() {
     try {
         loadingMessages.value = true;
 
-        const res = await axios.get(
-            "/chat/" + currentChat.value.chat_id + "/messages",
-            {
-                params: { page: page.value },
-            }
-        );
+        const res = await axios.get("/messages/" + currentChat.value.chat_id, {
+            params: { page: page.value },
+        });
         page.value += 1;
 
         oldScrollTop.value = chatContainer.value.scrollTop;
         oldScrollHeight.value = chatContainer.value.scrollHeight;
 
-        return res.data.messages;
+        const messages = res.data.messages;
+
+        if (messages.length == 0) {
+            page.value = -1;
+            return [];
+        }
+        return messages;
     } catch (error) {
         console.error("Get messages request error: " + error);
     } finally {
@@ -170,14 +188,29 @@ async function getMessages() {
     }
 }
 
+// Chat switch watcher
 watch(
     () => currentChat.value,
     async (newChat, oldChat) => {
-        if (newChat) {
+        if (newChat && newChat.id !== oldChat.id) {
             page.value = 1;
 
             messages.value = [];
-            messages.value = await getMessages();
+            await nextTick();
+            while (
+                chatContainer.value.scrollHeight <=
+                chatContainer.value.offsetHeight
+            ) {
+                if (page.value == -1) {
+                    break;
+                }
+                if (loadingMessages.value) {
+                    return;
+                }
+
+                messages.value = [...(await getMessages()), ...messages.value];
+                await nextTick();
+            }
 
             nextTick(() => {
                 scrollToBottom();
@@ -190,11 +223,32 @@ watch(
         }
     }
 );
+// Message loading/load watcher
+watch(
+    () => loadingMessages.value,
+    (isLoading, wasLoading) => {
+        emits(isLoading ? "loadingMessages" : "loadedMessages");
+    }
+);
 
 onMounted(async () => {
     if (currentChat && currentChat.value) {
-        // Load messages
-        messages.value = await getMessages();
+        // Load messages until chat is filled
+        while (
+            chatContainer.value.scrollHeight <=
+                chatContainer.value.offsetHeight &&
+            chatContainer.value.scrollTop == 0
+        ) {
+            if (page.value == -1) {
+                break;
+            }
+            if (loadingMessages.value) {
+                return;
+            }
+
+            messages.value = [...(await getMessages()), ...messages.value];
+            await nextTick();
+        }
 
         // Initial scroll
         nextTick(() => {

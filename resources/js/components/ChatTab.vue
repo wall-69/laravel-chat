@@ -18,7 +18,7 @@
             draggable="false"
         />
 
-        <div class="d-flex flex-column mw-0 placeholder-glow">
+        <div class="d-flex flex-column min-w-0 placeholder-glow">
             <!-- Profile Name -->
             <p class="m-0 text-white fw-bold">
                 {{ userChat.name }}
