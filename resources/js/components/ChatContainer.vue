@@ -1,5 +1,6 @@
 <template>
     <div class="gap-2 m-0 p-2 bg-chat rounded-3 shadow h-100">
+        <!-- IF currentChat is not null, render it -->
         <div
             v-if="currentChat"
             class="container-lg py-3 d-flex flex-column h-100"
@@ -9,17 +10,20 @@
                 class="container-lg border-bottom border-divider border-opacity-25 pb-2 d-flex justify-content-between"
             >
                 <div class="d-flex align-items-center gap-2">
+                    <!-- Chat picture -->
                     <img
                         :src="asset(currentChat.picture)"
-                        alt="X's profile picture"
+                        :alt="currentChat.name + ' chat profile picture'"
                         class="bg-white rounded-circle"
                         height="45"
                         width="45"
                     />
+                    <!-- Chat name -->
                     <p class="m-0 text-white fw-bold">
                         {{ currentChat.name }}
                     </p>
                 </div>
+                <!-- Chat actions button -->
                 <button class="border-0 bg-transparent text-white ms-auto">
                     <i class="bx bx-dots-horizontal-rounded bx-md"></i>
                 </button>
@@ -34,6 +38,7 @@
                     'mt-auto': messages.length > 0,
                 }"
             >
+                <!-- Loading spinner -->
                 <div
                     v-show="messages.length == 0 || loadingMessages"
                     class="spinner-border text-white mx-auto"
@@ -45,6 +50,8 @@
                 >
                     <span class="visually-hidden">Loading...</span>
                 </div>
+
+                <!-- Messages -->
                 <template v-show="messages" v-for="message in messages">
                     <!-- IF message.user_id == currentUser.id -->
                     <chat-sent-message
@@ -61,7 +68,7 @@
                 </template>
             </div>
 
-            <!-- Input -->
+            <!-- Send message form -->
             <form
                 @submit.prevent="sendMessage"
                 class="input-group shadow rounded-5"
@@ -86,16 +93,20 @@
                 </button>
             </form>
         </div>
+
+        <!-- ELSE render no chat -->
         <div
             v-else
             class="d-flex h-100 align-items-center justify-content-center"
         >
             <h3 class="text-center text-white">
-                You don't have any chats. <br />
+                You don't have any chats.
+                <br />
                 Explore channels here:
-                <a href="#" class="text-decoration-underline text-accent"
-                    >Channels</a
-                >!
+                <a href="#" class="text-decoration-underline text-accent">
+                    Channels
+                </a>
+                !
             </h3>
         </div>
     </div>
@@ -105,12 +116,34 @@
 import { asset } from "../helper";
 import { inject, nextTick, onMounted, ref, watch } from "vue";
 
+/*
+ * EMITS
+ */
+
 const emits = defineEmits(["loadingMessages", "loadedMessages"]);
+
+/*
+ *  EVENTS
+ */
+onMounted(async () => {
+    if (currentChat && currentChat.value) {
+        // Prepare chat by loading messages and scrolling to bottom
+        prepareChat();
+
+        // Initial echo join
+        joinPrivateChannel("chats." + currentChat.value.chat_id);
+    }
+});
+
+/*
+ * COMPONENT
+ */
 
 const messages = ref([]);
 const currentChat = inject("currentChat");
 const currentUser = inject("currentUser");
 
+// Scroll message loading variables
 const oldScrollTop = ref(0);
 const oldScrollHeight = ref(0);
 const loadingMessages = ref(false);
@@ -124,37 +157,57 @@ function sendMessage() {
     console.log("sendmessage");
 }
 
-// Echo
+// ECHO
+/**
+ * Joins private echo channel for listening to event broadcasts.
+ * @param channelName The name of the channel
+ */
 function joinPrivateChannel(channelName) {
     Echo.private(channelName).listen("MessageSent", (e) => {
         // i dont fucking know
     });
 }
 
+/**
+ * Leaves the old private echo channels and joins the new one using the `joinPrivateChannel` method.
+ * @param oldChannel The name of the old channel
+ * @param newChannel The name of the new channel
+ */
+function switchChannels(oldChannel, newChannel) {
+    Echo.leave(oldChannel);
+    joinPrivateChannel(newChannel);
+}
+
 // Chat
 const chatContainer = ref(null);
 
+/**
+ * Scrolls to the bottom of the ChatContainer
+ */
 function scrollToBottom() {
     if (chatContainer.value) {
         chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
     }
 }
 
-function switchChannels(oldChannel, newChannel) {
-    Echo.leave(oldChannel);
-    joinPrivateChannel(newChannel);
-}
-
+/**
+ * Handles the scroll of the chat.
+ * If the user scrolls to the top of the ChatContainer, older messages will be loaded, only if the current page is not -1 (=> no more messages can be loaded).
+ */
 async function handleScroll() {
+    // If the scroll is at top, no messages are currently loading and the page is not -1
     if (
         chatContainer.value.scrollTop == 0 &&
         !loadingMessages.value &&
         page.value != -1
     ) {
+        // Add the new messages to the array
         messages.value = [...(await getMessages()), ...messages.value];
 
+        // Await one tick for the container to update with the new messages
         await nextTick();
 
+        // Scroll to previous position before loading messages (to the message that the user last seen)
         chatContainer.value.scrollTop =
             chatContainer.value.scrollHeight -
             oldScrollHeight.value +
@@ -162,6 +215,10 @@ async function handleScroll() {
     }
 }
 
+/**
+ * Gets the messages from the current page with get request. Also sets the `oldScrollTop` and `oldScrollHeight` values and sets `loadingMessages` during the process.
+ * @returns The array of the messages from current page (empty if there are no more messages to load)
+ */
 async function getMessages() {
     try {
         loadingMessages.value = true;
@@ -188,33 +245,45 @@ async function getMessages() {
     }
 }
 
-// Chat switch watcher
+/**
+ * "Prepares" the chat by loading messages until screen is filled and then scrolls to bottom of the ChatContainer.
+ */
+async function prepareChat() {
+    while (
+        chatContainer.value.scrollHeight <= chatContainer.value.offsetHeight
+    ) {
+        if (page.value == -1) {
+            break;
+        }
+        if (loadingMessages.value) {
+            return;
+        }
+
+        messages.value = [...(await getMessages()), ...messages.value];
+        await nextTick();
+    }
+
+    nextTick(() => {
+        scrollToBottom();
+    });
+}
+
+/*
+ *  WATCHERS
+ */
+
+// Chat switch watcher - switches to new chat, when the currentChat is changed.
 watch(
     () => currentChat.value,
     async (newChat, oldChat) => {
         if (newChat && newChat.id !== oldChat.id) {
+            // Reset current page and set messages to empty array, then wait one tick to empty the chat visually
             page.value = 1;
-
             messages.value = [];
             await nextTick();
-            while (
-                chatContainer.value.scrollHeight <=
-                chatContainer.value.offsetHeight
-            ) {
-                if (page.value == -1) {
-                    break;
-                }
-                if (loadingMessages.value) {
-                    return;
-                }
 
-                messages.value = [...(await getMessages()), ...messages.value];
-                await nextTick();
-            }
-
-            nextTick(() => {
-                scrollToBottom();
-            });
+            // Prepare the chat by loading messages and then scrolling to bottom
+            prepareChat();
 
             switchChannels(
                 "chats." + oldChat.chat_id,
@@ -223,40 +292,12 @@ watch(
         }
     }
 );
-// Message loading/load watcher
+
+// Message loading/load watcher - emits the apropriate emit based on the current loading state
 watch(
     () => loadingMessages.value,
     (isLoading, wasLoading) => {
         emits(isLoading ? "loadingMessages" : "loadedMessages");
     }
 );
-
-onMounted(async () => {
-    if (currentChat && currentChat.value) {
-        // Load messages until chat is filled
-        while (
-            chatContainer.value.scrollHeight <=
-                chatContainer.value.offsetHeight &&
-            chatContainer.value.scrollTop == 0
-        ) {
-            if (page.value == -1) {
-                break;
-            }
-            if (loadingMessages.value) {
-                return;
-            }
-
-            messages.value = [...(await getMessages()), ...messages.value];
-            await nextTick();
-        }
-
-        // Initial scroll
-        nextTick(() => {
-            scrollToBottom();
-        });
-
-        // Initial echo join
-        joinPrivateChannel("chats." + currentChat.value.chat_id);
-    }
-});
 </script>

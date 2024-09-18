@@ -1,7 +1,7 @@
 <template>
     <div
         role="button"
-        @click="switchChat(userChat.id)"
+        @click="$emit('switchChat', userChat.id)"
         class="d-flex gap-2 m-0 p-2 border-bottom border-divider text-decoration-none user-select-none"
         :class="{
             'bg-read-chat-tab': type == 'read',
@@ -11,7 +11,7 @@
         <!-- Chat Picture -->
         <img
             :src="asset(userChat.picture)"
-            alt="X's profile picture"
+            :alt="userChat.name + ' chat profile picture'"
             class="bg-white rounded-circle"
             width="65"
             height="65"
@@ -40,19 +40,40 @@
 import { onMounted, ref } from "vue";
 import { asset } from "../helper";
 
-// Props
+/*
+ *  PROPS
+ */
+
 const props = defineProps({
     userChat: Object,
     type: String,
-    chatPicture: String,
 });
 
-// Emits
+/*
+ *  EMITS
+ */
+
 const emits = defineEmits(["switchChat"]);
+
+/*
+ *  EVENTS
+ */
+
+onMounted(async () => {
+    lastMessage.value = await getLastMessage();
+});
+
+/*
+ *  COMPONENT
+ */
 
 // Last message
 const lastMessage = ref("");
 
+/**
+ * Gets the last message from the chat.
+ * @returns The last message formatted (nickname: message), if one exists, otherwise "No messages sent yet.".
+ */
 async function getLastMessage() {
     try {
         const res = await axios.get(
@@ -72,13 +93,4 @@ async function getLastMessage() {
 
     return "No messages sent yet.";
 }
-
-function switchChat(id) {
-    emits("switchChat", id);
-}
-
-// Events
-onMounted(async () => {
-    lastMessage.value = await getLastMessage();
-});
 </script>

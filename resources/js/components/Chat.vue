@@ -26,11 +26,19 @@
 <script setup>
 import { provide, ref } from "vue";
 
+/*
+ *  PROPS
+ */
+
 const props = defineProps({
     currentUser: Object,
     currentChat: Object,
     userChats: Array,
 });
+
+/*
+ *  COMPONENT
+ */
 
 const currentChat = ref(props.currentChat);
 
@@ -39,13 +47,25 @@ provide("currentChat", currentChat);
 
 // Loading messages logic (because I am too dumb to do it any other way rn)
 const loadingMessages = ref(false);
+
+/**
+ * When loadingMessages is emitted from ChatContainer, set loadingMessages to true.
+ */
 function handleLoadingMessages() {
     loadingMessages.value = true;
 }
+
+/**
+ * When loadedMessages is emitted from ChatContainer, set loadingMessages to false.
+ */
 function handleLoadedMessages() {
     loadingMessages.value = false;
 }
 
+/**
+ * When switchChat is emitted from ChatContainer, try to change the currentChat to the one specified, if it is valid.
+ * @param id the UserChat id
+ */
 function handleSwitchChat(id) {
     // Dont allow chat switch when loading messages
     if (loadingMessages.value) {
