@@ -3,6 +3,7 @@
 namespace App\Events;
 
 use App\Models\Message;
+use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -20,7 +21,7 @@ class MessageSent implements ShouldBroadcastNow
      * Create a new event instance.
      */
     public function __construct(
-        private readonly Message $message
+        public readonly Message $message
     ) {
     }
 

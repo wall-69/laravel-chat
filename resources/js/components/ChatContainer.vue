@@ -151,10 +151,23 @@ const page = ref(1);
 
 // Send message form
 const formMessage = ref("");
-
+/**
+ * Sends a POST request to store a new message in the current chat.
+ */
 function sendMessage() {
-    // route('messages.store', currentChat.chat_id)
-    console.log("sendmessage");
+    try {
+        axios.post(
+            route("messages.store", { chatId: currentChat.value.chat_id }),
+            {
+                message: formMessage.value,
+            }
+        );
+
+        // Reset the message input
+        formMessage.value = "";
+    } catch (error) {
+        console.error("Send message request error: " + error);
+    }
 }
 
 // ECHO
@@ -163,8 +176,15 @@ function sendMessage() {
  * @param channelName The name of the channel
  */
 function joinPrivateChannel(channelName) {
-    Echo.private(channelName).listen("MessageSent", (e) => {
-        // i dont fucking know
+    // Listens in private chat channel for MessageSent event
+    Echo.private(channelName).listen("MessageSent", async (e) => {
+        // Adds the new message to the messages array
+        messages.value.push(e.message);
+
+        // Wait one tick for the message to render
+        // Then scroll to bottom
+        await nextTick();
+        scrollToBottom();
     });
 }
 
