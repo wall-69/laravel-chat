@@ -3,7 +3,7 @@
         <!-- IF currentChat is not null, render it -->
         <div
             v-if="currentChat"
-            class="container-lg py-3 d-flex flex-column h-100"
+            class="container-lg py-3 d-flex flex-column h-100 position-relative"
         >
             <!-- Chat info -->
             <div
@@ -23,10 +23,26 @@
                         {{ currentChat.name }}
                     </p>
                 </div>
+
                 <!-- Chat actions button -->
-                <button class="border-0 bg-transparent text-white ms-auto">
+                <button
+                    @click="toggleActionsShown"
+                    class="border-0 bg-transparent text-white ms-auto"
+                >
                     <i class="bx bx-dots-horizontal-rounded bx-md"></i>
                 </button>
+            </div>
+
+            <!-- Chat actions -->
+            <div
+                role="button"
+                class="bg-white p-3 rounded-3 position-absolute end-0 d-flex flex-column"
+                :class="{
+                    'd-none': !actionsShown,
+                }"
+            >
+                <button @click="toggleActionsShown">X</button>
+                <button>block</button>
             </div>
 
             <!-- Chat -->
@@ -75,7 +91,7 @@
                 :class="{
                     'mt-auto': messages.length == 0,
                 }"
-                method="POST"
+                autocomplete="off"
             >
                 <input
                     v-model="formMessage"
@@ -141,6 +157,7 @@ emitter.on("messageSent", async (message) => {
 /*
  *  EVENTS
  */
+
 onMounted(() => {
     if (currentChat && currentChat.value) {
         // Prepare chat by loading messages and scrolling to bottom
@@ -155,6 +172,13 @@ onMounted(() => {
 const messages = ref([]);
 const currentChat = inject("currentChat");
 const currentUser = inject("currentUser");
+
+// Chat actions
+const actionsShown = ref(true);
+
+function toggleActionsShown() {
+    actionsShown.value = !actionsShown.value;
+}
 
 // Scroll message loading variables
 const oldScrollTop = ref(0);

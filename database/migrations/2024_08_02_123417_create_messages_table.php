@@ -18,7 +18,6 @@ return new class extends Migration
             $table->foreignIdFor(User::class)->onDelete("set null");
             $table->foreignIdFor(Chat::class)->onDelete("cascade");
             $table->text("content");
-            $table->timestamp("sent_at");
             $table->timestamps();
         });
     }
