@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getCurrentInstance } from "vue";
 
 const BASE_URL = "http://127.0.0.1:8000";
 
@@ -12,4 +13,11 @@ export async function csrf() {
     } catch (error) {
         console.error("CSRF Token request error: " + error);
     }
+}
+
+export default function useEmitter() {
+    const internalInstance = getCurrentInstance();
+    const emitter = internalInstance.appContext.config.globalProperties.emitter;
+
+    return emitter;
 }

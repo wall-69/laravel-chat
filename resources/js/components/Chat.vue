@@ -24,7 +24,8 @@
 </template>
 
 <script setup>
-import { provide, ref } from "vue";
+import { nextTick, onMounted, provide, ref } from "vue";
+import useEmitter from "../helper";
 
 /*
  *  PROPS
@@ -37,6 +38,23 @@ const props = defineProps({
 });
 
 /*
+ *  EMITS
+ */
+
+const emitter = useEmitter();
+
+/*
+ *  EVENTS
+ */
+
+onMounted(() => {
+    // Initial echo join
+    for (let userChat in props.userChats) {
+        joinPrivateChannel("chats." + props.userChats[userChat].chat_id);
+    }
+});
+
+/*
  *  COMPONENT
  */
 
@@ -44,6 +62,19 @@ const currentChat = ref(props.currentChat);
 
 provide("currentUser", props.currentUser);
 provide("currentChat", currentChat);
+
+// ECHO
+/**
+ * Joins private echo channel for listening to event broadcasts.
+ * @param channelName The name of the channel
+ */
+async function joinPrivateChannel(channelName) {
+    // Listens in private chat channel for MessageSent event
+    Echo.private(channelName).listen("MessageSent", async (e) => {
+        // Emit to the child components message sent event with the message
+        emitter.emit("messageSent", e.message);
+    });
+}
 
 // Loading messages logic (because I am too dumb to do it any other way rn)
 const loadingMessages = ref(false);

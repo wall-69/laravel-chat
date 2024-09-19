@@ -38,7 +38,7 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
-import { asset } from "../helper";
+import useEmitter, { asset } from "../helper";
 
 /*
  *  PROPS
@@ -54,6 +54,11 @@ const props = defineProps({
  */
 
 const emits = defineEmits(["switchChat"]);
+const emitter = useEmitter();
+
+emitter.on("messageSent", async () => {
+    lastMessage.value = await getLastMessage();
+});
 
 /*
  *  EVENTS

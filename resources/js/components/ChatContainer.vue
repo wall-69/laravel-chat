@@ -113,7 +113,7 @@
 </template>
 
 <script setup>
-import { asset } from "../helper";
+import useEmitter, { asset } from "../helper";
 import { inject, nextTick, onMounted, ref, watch } from "vue";
 
 /*
@@ -121,17 +121,30 @@ import { inject, nextTick, onMounted, ref, watch } from "vue";
  */
 
 const emits = defineEmits(["loadingMessages", "loadedMessages"]);
+const emitter = useEmitter();
+
+emitter.on("messageSent", async (message) => {
+    // Dont add message to container if it is from another chat
+    if (message.chat_id != currentChat.value.chat_id) {
+        return;
+    }
+
+    // Add the message to current messages array
+    messages.value.push(message);
+
+    // Wait one tick for the message to render
+    // Then scroll to bottom
+    await nextTick();
+    scrollToBottom();
+});
 
 /*
  *  EVENTS
  */
-onMounted(async () => {
+onMounted(() => {
     if (currentChat && currentChat.value) {
         // Prepare chat by loading messages and scrolling to bottom
         prepareChat();
-
-        // Initial echo join
-        joinPrivateChannel("chats." + currentChat.value.chat_id);
     }
 });
 
@@ -168,34 +181,6 @@ function sendMessage() {
     } catch (error) {
         console.error("Send message request error: " + error);
     }
-}
-
-// ECHO
-/**
- * Joins private echo channel for listening to event broadcasts.
- * @param channelName The name of the channel
- */
-function joinPrivateChannel(channelName) {
-    // Listens in private chat channel for MessageSent event
-    Echo.private(channelName).listen("MessageSent", async (e) => {
-        // Adds the new message to the messages array
-        messages.value.push(e.message);
-
-        // Wait one tick for the message to render
-        // Then scroll to bottom
-        await nextTick();
-        scrollToBottom();
-    });
-}
-
-/**
- * Leaves the old private echo channels and joins the new one using the `joinPrivateChannel` method.
- * @param oldChannel The name of the old channel
- * @param newChannel The name of the new channel
- */
-function switchChannels(oldChannel, newChannel) {
-    Echo.leave(oldChannel);
-    joinPrivateChannel(newChannel);
 }
 
 // Chat
@@ -304,11 +289,6 @@ watch(
 
             // Prepare the chat by loading messages and then scrolling to bottom
             prepareChat();
-
-            switchChannels(
-                "chats." + oldChat.chat_id,
-                "chats." + newChat.chat_id
-            );
         }
     }
 );
