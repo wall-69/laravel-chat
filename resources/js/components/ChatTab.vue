@@ -38,7 +38,7 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
-import useEmitter, { asset } from "../helper";
+import { asset, useEmitter } from "../helper";
 
 /*
  *  PROPS
@@ -56,8 +56,12 @@ const props = defineProps({
 const emits = defineEmits(["switchChat"]);
 const emitter = useEmitter();
 
-emitter.on("messageSent", async () => {
-    lastMessage.value = await getLastMessage();
+emitter.on("messageSent", async (message) => {
+    if (message.chat_id != props.userChat.chat_id) {
+        return;
+    }
+
+    lastMessage.value = message.user.nickname + ": " + message.content;
 });
 
 /*

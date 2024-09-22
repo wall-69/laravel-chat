@@ -24,8 +24,8 @@
 </template>
 
 <script setup>
-import { nextTick, onMounted, provide, ref } from "vue";
-import useEmitter from "../helper";
+import { onMounted, provide, ref } from "vue";
+import { useEmitter } from "../helper";
 
 /*
  *  PROPS

@@ -41,8 +41,19 @@
                     'd-none': !actionsShown,
                 }"
             >
-                <button @click="toggleActionsShown">X</button>
-                <button>block</button>
+                <button
+                    @click="toggleActionsShown"
+                    class="border-0 bg-transparent d-flex align-items-center gap-2"
+                >
+                    <i class="bx bx-x bx-sm"></i>
+                    <span class="fw-bold">Close</span>
+                </button>
+                <button
+                    class="border-0 bg-transparent d-flex align-items-center gap-2"
+                >
+                    <i class="bx bx-user-minus bx-sm"></i>
+                    <span class="fw-bold">Block</span>
+                </button>
             </div>
 
             <!-- Chat -->
@@ -129,7 +140,7 @@
 </template>
 
 <script setup>
-import useEmitter, { asset } from "../helper";
+import { asset, useEmitter } from "../helper";
 import { inject, nextTick, onMounted, ref, watch } from "vue";
 
 /*
