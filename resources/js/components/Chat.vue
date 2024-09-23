@@ -5,7 +5,7 @@
                 class="d-none d-lg-block col-3 rounded-3 bg-secondary bg-gradient shadow p-0 overflow-x-scroll overflow-y-scroll"
             >
                 <chat-tab
-                    v-for="userChat in userChats"
+                    v-for="userChat in chatOrder"
                     @switch-chat="handleSwitchChat"
                     :key="userChat.id"
                     :user-chat="userChat"
@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { onMounted, provide, ref } from "vue";
+import { onMounted, provide, reactive, ref } from "vue";
 import { useEmitter } from "../helper";
 
 /*
@@ -33,7 +33,7 @@ import { useEmitter } from "../helper";
 
 const props = defineProps({
     currentUser: Object,
-    currentChat: Object,
+    chatOrder: Array,
     userChats: Array,
 });
 
@@ -49,8 +49,8 @@ const emitter = useEmitter();
 
 onMounted(() => {
     // Initial echo join
-    for (let userChat in props.userChats) {
-        joinPrivateChannel("chats." + props.userChats[userChat].chat_id);
+    for (let userChat in props.chatOrder) {
+        joinPrivateChannel("chats." + props.chatOrder[userChat].chat_id);
     }
 });
 
@@ -58,7 +58,8 @@ onMounted(() => {
  *  COMPONENT
  */
 
-const currentChat = ref(props.currentChat);
+const chatOrder = ref([...props.chatOrder]);
+const currentChat = ref(props.chatOrder[0]);
 
 provide("currentUser", props.currentUser);
 provide("currentChat", currentChat);
@@ -73,6 +74,20 @@ async function joinPrivateChannel(channelName) {
     Echo.private(channelName).listen("MessageSent", async (e) => {
         // Emit to the child components message sent event with the message
         emitter.emit("messageSent", e.message);
+
+        // Reorder ChatTabs
+        const chatIndex = chatOrder.value.findIndex(
+            (userChat) => userChat.chat_id === e.message.chat_id
+        );
+
+        if (chatIndex !== -1) {
+            chatOrder.value[chatIndex].last_message = e.message.created_at;
+
+            // Re-sort the chats
+            chatOrder.value.sort((a, b) => {
+                return new Date(b.last_message) - new Date(a.last_message);
+            });
+        }
     });
 }
 

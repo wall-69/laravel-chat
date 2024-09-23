@@ -10,7 +10,7 @@ class Chat extends Model
     use HasFactory;
 
     protected $fillable = [
-        "name", "is_private"
+        "name", "is_private", "last_message"
     ];
 
     public function userChats()

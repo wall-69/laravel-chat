@@ -16,6 +16,12 @@ class MessageController extends Controller
         $page = $request->query("page", 1);
         $messagesPerPage = 15;
 
+        if (!$chat->messages) {
+            return response()->json([
+                "message" => "No messages yet."
+            ]);
+        }
+
         if (UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chatId)->exists()) {
             return response()->json([
                 "messages" => $chat
@@ -51,6 +57,9 @@ class MessageController extends Controller
             // Add User to the message
             $message->user = auth()->user();
             event(new MessageSent($message));
+
+            // Update last message timestamp in chat
+            Chat::find($chatId)->update(["last_message" => now()]);
 
             return response()->json([
                 "message" => "Message successfully stored.",

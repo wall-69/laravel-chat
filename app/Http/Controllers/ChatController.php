@@ -13,7 +13,17 @@ class ChatController extends Controller
 {
     public function index()
     {
-        return view("chat.index", ["currentChat" => auth()->user()->userChats->first()]);
+        $userChats = auth()->user()->userChats;
+        $chatOrder = auth()->user()->userChats()
+            ->with("chat")
+            ->get()
+            ->sortByDesc(function ($userChat) {
+                return optional($userChat->chat)->last_message;
+            })
+            ->values()
+            ->toArray();
+
+        return view("chat.index", ["chatOrder" => $chatOrder]);
     }
 
     public function create(Request $request)
@@ -58,10 +68,10 @@ class ChatController extends Controller
         $lastMessage = $chat->lastMessage;
         if (UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chatId)->exists()) {
             return response()->json([
-                "lastMessage" => [
+                "lastMessage" => $lastMessage ? [
                     "nickname" => $lastMessage->user->nickname,
                     "content" => $lastMessage->content
-                ]
+                ] : null
             ]);
         }
 

@@ -185,7 +185,7 @@ const currentChat = inject("currentChat");
 const currentUser = inject("currentUser");
 
 // Chat actions
-const actionsShown = ref(true);
+const actionsShown = ref(false);
 
 function toggleActionsShown() {
     actionsShown.value = !actionsShown.value;
@@ -266,6 +266,12 @@ async function getMessages() {
         const res = await axios.get("/messages/" + currentChat.value.chat_id, {
             params: { page: page.value },
         });
+
+        if (res.data.message && res.data.message == "No messages yet.") {
+            // TODO: finish this shit
+            return [];
+        }
+
         page.value += 1;
 
         oldScrollTop.value = chatContainer.value.scrollTop;
