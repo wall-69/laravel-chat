@@ -16,7 +16,7 @@ class MessageController extends Controller
         $page = $request->query("page", 1);
         $messagesPerPage = 15;
 
-        if (!$chat->messages) {
+        if (count($chat->messages) == 0) {
             return response()->json([
                 "message" => "No messages yet."
             ]);

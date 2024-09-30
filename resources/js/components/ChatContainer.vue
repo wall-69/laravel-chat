@@ -67,7 +67,7 @@
             >
                 <!-- Loading spinner -->
                 <div
-                    v-show="messages.length == 0 || loadingMessages"
+                    v-show="loadingMessages"
                     class="spinner-border text-white mx-auto"
                     :class="{
                         'mt-5': messages.length == 0,
@@ -79,7 +79,11 @@
                 </div>
 
                 <!-- Messages -->
-                <template v-show="messages" v-for="message in messages">
+                <!-- IF messages.length > 0 -->
+                <template
+                    v-if="messages.length > 0"
+                    v-for="message in messages"
+                >
                     <!-- IF message.user_id == currentUser.id -->
                     <chat-sent-message
                         v-if="message.user_id == currentUser.id"
@@ -93,6 +97,10 @@
                         :message="message.content"
                     ></chat-received-message>
                 </template>
+                <!-- ELSE -->
+                <p v-else v-if="!loadingMessages" class="text-white">
+                    No messages sent yet.
+                </p>
             </div>
 
             <!-- Send message form -->
@@ -283,6 +291,7 @@ async function getMessages() {
             page.value = -1;
             return [];
         }
+
         return messages;
     } catch (error) {
         console.error("Get messages request error: " + error);
@@ -305,7 +314,12 @@ async function prepareChat() {
             return;
         }
 
-        messages.value = [...(await getMessages()), ...messages.value];
+        const newMessages = await getMessages();
+        if (newMessages.length == 0) {
+            break;
+        }
+
+        messages.value = [...newMessages, ...messages.value];
         await nextTick();
     }
 

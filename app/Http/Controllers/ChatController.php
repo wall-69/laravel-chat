@@ -13,12 +13,11 @@ class ChatController extends Controller
 {
     public function index()
     {
-        $userChats = auth()->user()->userChats;
         $chatOrder = auth()->user()->userChats()
             ->with("chat")
             ->get()
             ->sortByDesc(function ($userChat) {
-                return optional($userChat->chat)->last_message;
+                return $userChat->chat->last_message;
             })
             ->values()
             ->toArray();

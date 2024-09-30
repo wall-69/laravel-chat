@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { onMounted, provide, reactive, ref } from "vue";
+import { onMounted, provide, ref } from "vue";
 import { useEmitter } from "../helper";
 
 /*
@@ -75,18 +75,29 @@ async function joinPrivateChannel(channelName) {
         // Emit to the child components message sent event with the message
         emitter.emit("messageSent", e.message);
 
-        // Reorder ChatTabs
+        // Find the index of the chat in which the message was sent
         const chatIndex = chatOrder.value.findIndex(
             (userChat) => userChat.chat_id === e.message.chat_id
         );
 
+        // Check, if the chat was found in the chatOrder array
         if (chatIndex !== -1) {
-            chatOrder.value[chatIndex].last_message = e.message.created_at;
+            // Save the current Y scroll position, because after sorting the chat tabs, the scrollbar jumps automatically
+            const scrollPosition = window.scrollY;
+
+            // Update the last message of the chat
+            chatOrder.value[chatIndex].chat.last_message = e.message.created_at;
 
             // Re-sort the chats
             chatOrder.value.sort((a, b) => {
-                return new Date(b.last_message) - new Date(a.last_message);
+                return (
+                    new Date(b.chat.last_message) -
+                    new Date(a.chat.last_message)
+                );
             });
+
+            // Scroll to the scroll position the user actually had
+            window.scrollTo(window.scrollX, scrollPosition);
         }
     });
 }
