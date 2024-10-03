@@ -25,7 +25,7 @@
 
 <script setup>
 import { onMounted, provide, ref } from "vue";
-import { useEmitter } from "../helper";
+import { asset, useEmitter } from "../helper";
 
 /*
  *  PROPS
@@ -98,6 +98,12 @@ async function joinPrivateChannel(channelName) {
 
             // Scroll to the scroll position the user actually had
             window.scrollTo(window.scrollX, scrollPosition);
+        }
+
+        if (e.message.user_id != props.currentUser.id) {
+            // Play notification sound, if the message was not sent by the user
+            let audio = new Audio(asset("audio/notification.mp3"));
+            audio.play();
         }
     });
 }
