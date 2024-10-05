@@ -10,7 +10,11 @@ class UserChat extends Model
     use HasFactory;
 
     protected $fillable = [
-        "user_id", "chat_id", "name", "picture", "joined_at"
+        "user_id", "chat_id", "name", "picture", "last_read"
+    ];
+
+    protected $casts = [
+        "last_read" => "datetime"
     ];
 
     public function chat()

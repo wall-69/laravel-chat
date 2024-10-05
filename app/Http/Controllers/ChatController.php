@@ -7,8 +7,6 @@ use App\Models\User;
 use App\Models\UserChat;
 use Illuminate\Http\Request;
 
-use function Laravel\Prompts\error;
-
 class ChatController extends Controller
 {
     public function index()
@@ -17,10 +15,16 @@ class ChatController extends Controller
             ->with("chat")
             ->get()
             ->sortByDesc(function ($userChat) {
-                return $userChat->chat->last_message;
+                return $userChat->chat->last_message === null ? PHP_INT_MAX : strtotime($userChat->chat->last_message);
             })
             ->values()
             ->toArray();
+
+        if (count($chatOrder) >= 1) {
+            $firstChat = UserChat::find($chatOrder[0]["id"]);
+            $firstChat->update(["last_read" => now()->toISOString()]);
+            $chatOrder[0]["last_read"] = now()->toISOString();
+        }
 
         return view("chat.index", ["chatOrder" => $chatOrder]);
     }
@@ -69,7 +73,8 @@ class ChatController extends Controller
             return response()->json([
                 "lastMessage" => $lastMessage ? [
                     "nickname" => $lastMessage->user->nickname,
-                    "content" => $lastMessage->content
+                    "content" => $lastMessage->content,
+                    "created_at" => $lastMessage->created_at
                 ] : null
             ]);
         }

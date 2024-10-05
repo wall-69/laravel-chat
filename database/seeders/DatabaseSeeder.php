@@ -29,7 +29,13 @@ class DatabaseSeeder extends Seeder
             'nickname' => 'podnikatel',
             'email' => 'c@c.c',
             "password" => '$2y$12$cVFF9K.gLEZv.KqpeV0V5OUyaauXPAr41xeZIbb6qv47FRJBfjw3q',
-            "profile_picture" => "storage/img/pfp/7vTFe9ThR3lYrarHn2J63aLw4BIco466XtoEO0yd.jpg",
+            "profile_picture" => "storage/img/pfp/7vTFe9ThR3lYrarHn2J63aLw4BIco466XtoEO0yd.png",
+        ]);
+        User::factory()->create([
+            'nickname' => 'elektrikar',
+            'email' => 'd@d.d',
+            "password" => '$2y$12$cVFF9K.gLEZv.KqpeV0V5OUyaauXPAr41xeZIbb6qv47FRJBfjw3q',
+            "profile_picture" => "storage/img/pfp/ZkGOx8lVYWzm4VYwhep8mcWUMdlEPInFMjSAxdDd.png",
         ]);
     }
 }

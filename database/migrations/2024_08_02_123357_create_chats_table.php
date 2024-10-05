@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string("name");
             $table->boolean("is_private");
-            $table->timestamp("last_message")->default("CURRENT_TIMESTAMP");
+            $table->timestamp("last_message")->nullable();
             $table->timestamps();
         });
     }

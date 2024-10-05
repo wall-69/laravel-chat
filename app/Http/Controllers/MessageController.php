@@ -59,7 +59,7 @@ class MessageController extends Controller
             event(new MessageSent($message));
 
             // Update last message timestamp in chat
-            Chat::find($chatId)->update(["last_message" => now()]);
+            Chat::find($chatId)->update(["last_message" => now()->toISOString()]);
 
             return response()->json([
                 "message" => "Message successfully stored.",

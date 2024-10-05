@@ -13,6 +13,10 @@ class Chat extends Model
         "name", "is_private", "last_message"
     ];
 
+    protected $casts = [
+        "last_message" => "datetime"
+    ];
+
     public function userChats()
     {
         return $this->hasMany(UserChat::class);

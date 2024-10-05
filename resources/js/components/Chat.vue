@@ -9,7 +9,6 @@
                     @switch-chat="handleSwitchChat"
                     :key="userChat.id"
                     :user-chat="userChat"
-                    type="read"
                 >
                 </chat-tab>
             </div>
@@ -81,7 +80,7 @@ async function joinPrivateChannel(channelName) {
         );
 
         // Check, if the chat was found in the chatOrder array
-        if (chatIndex !== -1) {
+        if (chatIndex !== -1 && chatOrder.value.length > 1) {
             // Save the current Y scroll position, because after sorting the chat tabs, the scrollbar jumps automatically
             const scrollPosition = window.scrollY;
 

@@ -13,7 +13,7 @@
                     <!-- Chat picture -->
                     <img
                         :src="asset(currentChat.picture)"
-                        :alt="currentChat.name + ' chat profile picture'"
+                        :alt="currentChat.name + ' profile picture'"
                         class="bg-white rounded-circle"
                         height="45"
                         width="45"
