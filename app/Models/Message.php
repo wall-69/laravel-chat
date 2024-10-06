@@ -22,4 +22,20 @@ class Message extends Model
     {
         return $this->belongsTo(Chat::class);
     }
+
+    public function toBroadcastArray()
+    {
+        return [
+            "id" => $this->id,
+            "user_id" => $this->user_id,
+            "chat_id" => $this->chat_id,
+            "content" => $this->content,
+            "created_at" => $this->created_at,
+            "user" => [
+                "id" => $this->user->id,
+                "nickname" => $this->user->nickname,
+                "profile_picture" => $this->user->profile_picture,
+            ],
+        ];
+    }
 }

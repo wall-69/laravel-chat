@@ -4,8 +4,8 @@
         @click="handleClick()"
         class="d-flex gap-2 m-0 p-2 border-bottom border-divider text-decoration-none user-select-none"
         :class="{
-            'bg-read-chat-tab': type == 'read',
-            'bg-unread-chat-tab': type == 'unread',
+            'bg-read-chat-tab': read,
+            'bg-unread-chat-tab': !read,
         }"
     >
         <!-- Chat Picture -->
@@ -24,13 +24,12 @@
                 {{ userChat.name }}
             </p>
             <!-- Last message -->
-            <p
-                class="m-0 text-white fw-light small text-truncate"
-                :class="{
-                    placeholder: !lastMessage,
-                }"
-            >
-                {{ lastMessage }}
+            <p class="m-0 text-white fw-light small text-truncate">
+                {{
+                    lastMessage
+                        ? lastMessage.user.nickname + ": " + lastMessage.content
+                        : "No messages sent yet."
+                }}
             </p>
         </div>
     </div>
@@ -46,7 +45,6 @@ import { asset, useEmitter } from "../helper";
 
 const props = defineProps({
     userChat: Object,
-    type: String,
 });
 
 /*
@@ -67,29 +65,27 @@ emitter.on("messageSent", async (message) => {
         message.chat_id != currentChat.value.chat_id &&
         message.user_id != currentUser.id
     ) {
-        type.value = "unread";
+        read.value = false;
     }
 
-    // Update lastMessage and lastMessageTime
-    lastMessage.value = message.user.nickname + ": " + message.content;
-    lastMessageTime.value = new Date();
+    // Update lastMessage
+    lastMessage.value = message;
 });
 
 /*
  *  EVENTS
  */
 
-onMounted(async () => {
-    // Get the last message from the chat
-    lastMessage.value = await getLastMessage();
-
-    // If the last message was sent after the
+onMounted(() => {
+    // If the last message was sent after the last read, set the ChatTab as unread
     if (
+        lastMessage.value &&
         lastMessage.value.user_id != currentUser.id &&
-        (lastMessageTime.value > new Date(userChat.value.last_read) ||
+        (new Date(lastMessage.value.created_at) >
+            new Date(userChat.value.last_read) ||
             userChat.value.last_read == null)
     ) {
-        type.value = "unread";
+        read.value = false;
     }
 });
 
@@ -101,49 +97,22 @@ onBeforeUnmount(() => {
  *  COMPONENT
  */
 
-const type = ref(props.type);
+const read = ref(true);
 const userChat = ref(props.userChat);
 
 const currentUser = inject("currentUser");
 const currentChat = inject("currentChat");
 
 // Last message
-const lastMessage = ref("");
-const lastMessageTime = ref(new Date());
+const lastMessage = ref(userChat.value.chat.last_message);
 
 /**
- * Gets the last message from the chat.
- * @returns The last message formatted (nickname: message), if one exists, otherwise "No messages sent yet.".
- */
-async function getLastMessage() {
-    try {
-        const res = await axios.get(
-            "/chat/" + userChat.value.chat_id + "/last-message"
-        );
-
-        if (res.data.lastMessage) {
-            lastMessageTime.value = new Date(res.data.lastMessage.created_at);
-
-            return (
-                res.data.lastMessage.nickname +
-                ": " +
-                res.data.lastMessage.content
-            );
-        }
-    } catch (error) {
-        console.error("Last message request error: " + error);
-    }
-
-    return "No messages sent yet.";
-}
-
-/**
- * Handles the click on the ChatTab. Emits `switchChat` to parent and updates ChatTab type.
+ * Handles the click on the ChatTab. Emits `switchChat` to parent and updates ChatTab read status.
  */
 async function handleClick() {
     emits("switchChat", userChat.value.id);
 
-    if (type.value == "unread") {
+    if (!read.value) {
         updateLastRead();
     }
 }
@@ -157,7 +126,7 @@ async function updateLastRead() {
     } catch (error) {
         console.error("Last read update request error: " + error);
     } finally {
-        type.value = "read";
+        read.value = true;
     }
 }
 </script>

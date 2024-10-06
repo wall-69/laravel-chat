@@ -17,12 +17,15 @@ class MessageSent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public readonly array $message;
+
     /**
      * Create a new event instance.
      */
     public function __construct(
-        public readonly Message $message
+        Message $message
     ) {
+        $this->message = $message->toBroadcastArray();
     }
 
     /**
@@ -33,7 +36,7 @@ class MessageSent implements ShouldBroadcastNow
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('chats.' . $this->message->chat_id),
+            new PrivateChannel('chats.' . $this->message["chat_id"]),
         ];
     }
 }

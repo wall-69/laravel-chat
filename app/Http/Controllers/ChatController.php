@@ -12,7 +12,10 @@ class ChatController extends Controller
     public function index()
     {
         $chatOrder = auth()->user()->userChats()
-            ->with("chat")
+            ->with([
+                "chat",
+                "chat.lastMessage.user:id,nickname",
+            ])
             ->get()
             ->sortByDesc(function ($userChat) {
                 return $userChat->chat->last_message === null ? PHP_INT_MAX : strtotime($userChat->chat->last_message);
@@ -73,6 +76,7 @@ class ChatController extends Controller
             return response()->json([
                 "lastMessage" => $lastMessage ? [
                     "nickname" => $lastMessage->user->nickname,
+                    "user_id" => $lastMessage->user_id,
                     "content" => $lastMessage->content,
                     "created_at" => $lastMessage->created_at
                 ] : null
