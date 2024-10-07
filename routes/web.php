@@ -3,6 +3,7 @@
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\UserBlockController;
 use App\Http\Controllers\UserChatController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -46,6 +47,12 @@ Route::controller(UserChatController::class)->name("userChat.")->group(function 
     Route::middleware("auth")->group(function () {
         Route::post("/user-chat/{userChatId}/last-read", "updateLastRead")->name("lastRead");
     });
+});
+
+// UserBlock
+Route::controller(UserBlockController::class)->name("userBlock.")->middleware("auth")->group(function () {
+    Route::post("/user-block", "store")->name("store");
+    Route::delete("/user-block/{userBlock}", "destroy")->name("destroy");
 });
 
 // Message

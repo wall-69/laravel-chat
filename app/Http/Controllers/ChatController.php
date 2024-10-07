@@ -34,7 +34,6 @@ class ChatController extends Controller
 
     public function create(Request $request)
     {
-        // TODO: check if user/s is not blocked
         $request->validate([
             "users" => "required"
         ]);
@@ -47,15 +46,32 @@ class ChatController extends Controller
         }
 
         if (count($users) == 2) {
-            $chat = Chat::create([
-                "name" => $users[0]["nickname"] . "," . $users[1]["nickname"],
-                "is_private" => true,
-            ]);
+            if ($users[1]->userBlocks->contains("blocked_user_id", $users[0]->id)) {
+                return back();
+            }
+
+            $chat = Chat::whereIn("name", [
+                $users[0]["nickname"] . "," . $users[1]["nickname"],
+                $users[1]["nickname"] . "," . $users[0]["nickname"]
+            ])->first();
+
+            if (!$chat) {
+                $chat = Chat::create([
+                    "name" => $users[0]["nickname"] . "," . $users[1]["nickname"],
+                    "is_private" => true,
+                ]);
+            } else {
+                $chat->update(["last_message" => now()->toISOString()]);
+            }
         } else {
             // TODO: group chat
         }
 
         foreach ($users as $user) {
+            if (UserChat::where("user_id", $user->id)->where("chat_id", $chat->id)->exists()) {
+                continue;
+            }
+
             $userChat = UserChat::create([
                 "user_id" => $user->id,
                 "chat_id" => $chat->id,

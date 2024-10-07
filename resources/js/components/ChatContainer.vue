@@ -19,9 +19,13 @@
                         width="45"
                     />
                     <!-- Chat name -->
-                    <p class="m-0 text-white fw-bold">
+                    <component
+                        :is="currentChat.chat.is_private ? 'a' : 'p'"
+                        :href="'/profile/' + currentChat.name"
+                        class="m-0 text-white fw-bold"
+                    >
                         {{ currentChat.name }}
-                    </p>
+                    </component>
                 </div>
 
                 <!-- Chat actions button -->
@@ -47,12 +51,6 @@
                 >
                     <i class="bx bx-x bx-sm"></i>
                     <span class="fw-bold">Close</span>
-                </button>
-                <button
-                    class="border-0 bg-transparent d-flex align-items-center gap-2"
-                >
-                    <i class="bx bx-user-minus bx-sm"></i>
-                    <span class="fw-bold">Block</span>
                 </button>
             </div>
 

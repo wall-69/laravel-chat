@@ -85,8 +85,13 @@ async function joinPrivateChannel(channelName) {
             const scrollPosition = window.scrollY;
 
             // Update the last message of the chat
-            chatOrder.value[chatIndex].chat.last_message.created_at =
-                e.message.created_at;
+            const lastMessage = chatOrder.value[chatIndex].chat.last_message;
+            if (lastMessage !== null) {
+                lastMessage.created_at = e.message.created_at;
+            } else {
+                // If there is no last message set it to the message that was just sent
+                chatOrder.value[chatIndex].chat.last_message = e.message;
+            }
 
             // Re-sort the chats
             chatOrder.value.sort((a, b) => {

@@ -5,6 +5,12 @@
     <main class="flex-shrink-0">
         <div class="container py-5">
             @isset($user)
+                @php
+                    $isMyProfile = auth()->check() && auth()->user()->nickname == $user->nickname;
+
+                    $messageCount = $user->messages()->count();
+                    $userChatCount = $user->userChats()->count();
+                @endphp
                 <div class="d-flex gap-5 justify-content-center">
                     {{-- Column 1 --}}
                     <div class="d-flex flex-column gap-5">
@@ -15,11 +21,16 @@
                             <div class="text-white">
                                 <p class="fs-4 fw-bold m-0">{{ $user->nickname }}</p>
                                 <p class="m-0 fw-light">joined {{ $user->created_at->format('m.d.Y') }}</p>
-                                <p class="m-0 fw-light">sent x messages and is in x chats</p>
+                                <p class="m-0 fw-light">
+                                    sent
+                                    {{ $messageCount }} {{ Str::plural('message', $messageCount) }}
+                                    and is in
+                                    {{ $userChatCount }} {{ Str::plural('chat', $userChatCount) }}
+                                </p>
                             </div>
                         </div>
 
-                        @if (auth()->check() && auth()->user()->nickname == $user->nickname)
+                        @if ($isMyProfile)
                             {{-- Settings --}}
                             <form class="px-5 py-4 bg-secondary rounded-4 d-flex flex-column gap-2"
                                 enctype="multipart/form-data">
@@ -53,7 +64,7 @@
                         @endif
                     </div>
                     <div class="d-flex flex-column gap-5">
-                        @if (auth()->check() && auth()->user()->nickname == $user->nickname)
+                        @if ($isMyProfile)
                             {{-- Column 2 --}}
                             {{-- Change email --}}
                             <form class="px-5 py-4 bg-secondary rounded-4 d-flex flex-column gap-2">
@@ -114,34 +125,74 @@
                             </form>
                         @else
                             <div class="px-3 py-2 bg-secondary rounded-4 shadow d-flex flex-column gap-2">
-                                <form method="POST" action="{{ route('chat.create') }}">
-                                    @method('POST')
-                                    @csrf
+                                {{--
+                                    Show Start chat button to:
+                                    - guest users
+                                    - users that dont have a UserChat with this user AND none of these 2 users block each other
+                                --}}
+                                @if (
+                                    !auth()->check() ||
+                                        (auth()->user()->userChats->doesntContain('name', $user->nickname) &&
+                                            auth()->user()->userBlocks->doesntContain('blocked_user_id', $user->id) &&
+                                            $user->userBlocks->doesntContain('blocked_user_id', auth()->user()->id)))
+                                    <form method="POST" action="{{ route('chat.create') }}">
+                                        @method('POST')
+                                        @csrf
 
-                                    @auth
-                                        <input type="hidden" name="users[]" value="{{ auth()->user()->id }}">
-                                        <input type="hidden" name="users[]" value="{{ $user->id }}">
-                                    @endauth
+                                        @auth
+                                            <input type="hidden" name="users[]" value="{{ auth()->user()->id }}">
+                                            <input type="hidden" name="users[]" value="{{ $user->id }}">
+                                        @endauth
 
-                                    <button type="submit"
-                                        class="border-0 bg-transparent d-flex align-items-center gap-2 text-white">
-                                        <i class="bx bx-user-plus bx-md"></i>
-                                        <span class="fs-5 fw-bold">
-                                            Start chat
-                                        </span>
-                                    </button>
-                                </form>
-                                <form method="POST">
-                                    @method('POST')
-                                    @csrf
+                                        <button type="submit"
+                                            class="border-0 bg-transparent d-flex align-items-center gap-2 text-white">
+                                            <i class="bx bx-user-plus bx-md"></i>
+                                            <span class="fs-5 fw-bold">
+                                                Start chat
+                                            </span>
+                                        </button>
+                                    </form>
+                                @endif
 
-                                    <button type="submit" class="border-0 bg-transparent d-flex align-items-center gap-2">
-                                        <i class="bx bx-user-minus bx-md"></i>
-                                        <span class="fs-5 fw-bold">
-                                            Block
-                                        </span>
-                                    </button>
-                                </form>
+                                @auth
+                                    @php
+                                        $userBlock = auth()
+                                            ->user()
+                                            ->userBlocks()
+                                            ->where('blocked_user_id', $user->id)
+                                            ->first();
+                                    @endphp
+
+                                    @if ($userBlock)
+                                        {{-- IF user is blocked --}}
+                                        <form method="POST" action="{{ route('userBlock.destroy', $userBlock) }}">
+                                            @method('DELETE')
+                                            @csrf
+
+                                            <button type="submit" class="border-0 bg-transparent d-flex align-items-center gap-2">
+                                                <i class="bx bx-user-check bx-md"></i>
+                                                <span class="fs-5 fw-bold">
+                                                    Unblock
+                                                </span>
+                                            </button>
+                                        </form>
+                                    @else
+                                        {{-- ELSE user isnt blocked --}}
+                                        <form method="POST" action="{{ route('userBlock.store') }}">
+                                            @method('POST')
+                                            @csrf
+
+                                            <input type="hidden" name="blocked_user" value="{{ $user->id }}">
+
+                                            <button type="submit" class="border-0 bg-transparent d-flex align-items-center gap-2">
+                                                <i class="bx bx-user-x bx-md"></i>
+                                                <span class="fs-5 fw-bold">
+                                                    Block
+                                                </span>
+                                            </button>
+                                        </form>
+                                    @endif
+                                @endauth
                             </div>
                         @endif
                     </div>
