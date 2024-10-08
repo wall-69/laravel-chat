@@ -211,7 +211,7 @@ const formMessage = ref("");
 function sendMessage() {
     try {
         axios.post(
-            route("messages.store", { chatId: currentChat.value.chat_id }),
+            route("messages.store", { chat: currentChat.value.chat_id }),
             {
                 message: formMessage.value,
             }
@@ -269,12 +269,15 @@ async function getMessages() {
     try {
         loadingMessages.value = true;
 
-        const res = await axios.get("/messages/" + currentChat.value.chat_id, {
-            params: { page: page.value },
-        });
+        const res = await axios.get(
+            route("messages.index", { chat: currentChat.value.chat_id }),
+            {
+                params: { page: page.value },
+            }
+        );
 
         if (res.data.message && res.data.message == "No messages yet.") {
-            // TODO: finish this shit
+            // TODO: finish this shit?
             return [];
         }
 

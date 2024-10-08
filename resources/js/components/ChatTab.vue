@@ -122,7 +122,9 @@ async function handleClick() {
  */
 async function updateLastRead() {
     try {
-        await axios.post("/user-chat/" + userChat.value.id + "/last-read");
+        await axios.post(
+            route("userChats.updateLastRead", { userChat: userChat.value.id })
+        );
     } catch (error) {
         console.error("Last read update request error: " + error);
     } finally {

@@ -10,9 +10,8 @@ use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {
-    public function index(Request $request, int $chatId)
+    public function index(Request $request, Chat $chat)
     {
-        $chat = Chat::findOrFail($chatId);
         $page = $request->query("page", 1);
         $messagesPerPage = 15;
 
@@ -22,7 +21,7 @@ class MessageController extends Controller
             ]);
         }
 
-        if (UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chatId)->exists()) {
+        if (UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chat->id)->exists()) {
             return response()->json([
                 "messages" => $chat
                     ->messages()->with('user')
@@ -37,19 +36,19 @@ class MessageController extends Controller
         abort(401);
     }
 
-    public function store(Request $request, int $chatId)
+    public function store(Request $request, Chat $chat)
     {
         $data = $request->validate([
             "message" => "required|min:1"
         ]);
 
         // Check, if chat id is valid one and if user is in the chat
-        $isValidChat = UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chatId)->exists();
+        $isValidChat = UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chat->id)->exists();
         if ($isValidChat) {
             $message = Message::create(
                 [
                     "user_id" => auth()->user()->id,
-                    "chat_id" => $chatId,
+                    "chat_id" => $chat->id,
                     "content" => $data["message"]
                 ]
             );
@@ -59,13 +58,13 @@ class MessageController extends Controller
             event(new MessageSent($message));
 
             // Update last message timestamp in chat
-            Chat::find($chatId)->update(["last_message" => now()->toISOString()]);
+            $chat->update(["last_message" => now()->toISOString()]);
 
             return response()->json([
                 "message" => "Message successfully stored.",
             ]);
         } else {
-            abort(400, "Invalid chat id.");
+            abort(400, "The user is not in this chat.");
         }
     }
 }

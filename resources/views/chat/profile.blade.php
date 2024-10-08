@@ -135,7 +135,7 @@
                                         (auth()->user()->userChats->doesntContain('name', $user->nickname) &&
                                             auth()->user()->userBlocks->doesntContain('blocked_user_id', $user->id) &&
                                             $user->userBlocks->doesntContain('blocked_user_id', auth()->user()->id)))
-                                    <form method="POST" action="{{ route('chat.create') }}">
+                                    <form method="POST" action="{{ route('chat.store') }}">
                                         @method('POST')
                                         @csrf
 
@@ -165,7 +165,7 @@
 
                                     @if ($userBlock)
                                         {{-- IF user is blocked --}}
-                                        <form method="POST" action="{{ route('userBlock.destroy', $userBlock) }}">
+                                        <form method="POST" action="{{ route('userBlocks.destroy', $userBlock) }}">
                                             @method('DELETE')
                                             @csrf
 
@@ -178,7 +178,7 @@
                                         </form>
                                     @else
                                         {{-- ELSE user isnt blocked --}}
-                                        <form method="POST" action="{{ route('userBlock.store') }}">
+                                        <form method="POST" action="{{ route('userBlocks.store') }}">
                                             @method('POST')
                                             @csrf
 

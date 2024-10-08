@@ -7,10 +7,8 @@ use Illuminate\Http\Request;
 
 class UserChatController extends Controller
 {
-    public function updateLastRead(int $userChatId)
+    public function updateLastRead(UserChat $userChat)
     {
-        $userChat = UserChat::findOrFail($userChatId);
-
         $userChat->update(["last_read" => now()->toISOString()]);
 
         return response()->json([

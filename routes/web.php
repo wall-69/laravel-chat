@@ -36,32 +36,28 @@ Route::controller(UserController::class)->name("users.")->group(function () {
 Route::controller(ChatController::class)->name("chat.")->group(function () {
     Route::middleware("auth")->group(function () {
         Route::get("/chat", "index")->name("index");
-        Route::get("/chat/{chatId}/last-message", "lastMessage");
 
-        Route::post("/chat/create", "create")->name("create");
+        Route::post("/chat", "store")->name("store");
     });
 });
 
 // UserChat
-Route::controller(UserChatController::class)->name("userChat.")->group(function () {
-    Route::middleware("auth")->group(function () {
-        Route::post("/user-chat/{userChatId}/last-read", "updateLastRead")->name("lastRead");
-    });
+Route::controller(UserChatController::class)->name("userChats.")->middleware("auth")->group(function () {
+    Route::post("/user-chat/{userChat}/last-read", "updateLastRead")->name("updateLastRead");
 });
 
 // UserBlock
-Route::controller(UserBlockController::class)->name("userBlock.")->middleware("auth")->group(function () {
+Route::controller(UserBlockController::class)->name("userBlocks.")->middleware("auth")->group(function () {
     Route::post("/user-block", "store")->name("store");
     Route::delete("/user-block/{userBlock}", "destroy")->name("destroy");
 });
 
 // Message
-Route::controller(MessageController::class)->name("messages.")->group(function () {
-    Route::middleware("auth")->group(function () {
-        Route::get("/messages/{chatId}", "index");
+// TODO: SHOULD BE AN API?
+Route::controller(MessageController::class)->name("messages.")->middleware("auth")->group(function () {
+    Route::get("/messages/{chat}", "index")->name("index");
 
-        Route::post("/messages/{chatId}", "store")->name("store");
-    });
+    Route::post("/messages/{chat}", "store")->name("store");
 });
 
 // Fallback

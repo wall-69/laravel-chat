@@ -32,7 +32,7 @@ class ChatController extends Controller
         return view("chat.index", ["chatOrder" => $chatOrder]);
     }
 
-    public function create(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
             "users" => "required"
@@ -81,24 +81,5 @@ class ChatController extends Controller
         }
 
         return redirect(route("chat.index"));
-    }
-
-    public function lastMessage(int $chatId)
-    {
-        $chat = Chat::findOrFail($chatId);
-
-        $lastMessage = $chat->lastMessage;
-        if (UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chatId)->exists()) {
-            return response()->json([
-                "lastMessage" => $lastMessage ? [
-                    "nickname" => $lastMessage->user->nickname,
-                    "user_id" => $lastMessage->user_id,
-                    "content" => $lastMessage->content,
-                    "created_at" => $lastMessage->created_at
-                ] : null
-            ]);
-        }
-
-        abort(401);
     }
 }
