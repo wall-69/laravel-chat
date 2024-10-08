@@ -24,7 +24,7 @@ class UserController extends Controller
         return redirect(route("login"))->withErrors(["email" => "The provided credentials do not match our records."]);
     }
 
-    public function create(Request $request)
+    public function store(Request $request)
     {
         $data = $request->validate([
             "nickname" => "required|min:5|max:20",

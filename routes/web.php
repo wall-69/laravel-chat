@@ -24,7 +24,7 @@ Route::controller(UserController::class)->name("users.")->group(function () {
 
     Route::middleware("guest")->group(function () {
         Route::post("/login", "login")->name("login");
-        Route::post("/register", "create")->name("create");
+        Route::post("/register", "store")->name("store");
     });
 
     Route::middleware("auth")->group(function () {
