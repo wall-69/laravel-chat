@@ -2,7 +2,7 @@
 
 @section('content')
     <x-chat-nav />
-    <main class="">
+    <main>
         <chat :current-user="{{ auth()->user() }}" :chat-order="{{ json_encode($chatOrder) }}"
             :user-chats="{{ auth()->user()->userChats()->with('chat')->get() }}"></chat>
     </main>

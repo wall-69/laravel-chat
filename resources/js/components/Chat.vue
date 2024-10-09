@@ -1,8 +1,12 @@
 <template>
-    <div class="px-2 px-lg-0 container-lg py-5">
-        <div class="row gx-0 gx-lg-5">
+    <div
+        @touchstart="handleTouchStart"
+        @touchend="handleTouchEnd"
+        class="px-2 px-md-0 container-md py-5"
+    >
+        <div class="row gx-0 gx-md-5">
             <div
-                class="d-none d-lg-block col-3 rounded-3 bg-secondary bg-gradient shadow p-0 overflow-x-scroll overflow-y-scroll"
+                class="d-none d-md-block col-3 rounded-3 bg-secondary bg-gradient shadow p-0 overflow-x-scroll overflow-y-scroll"
             >
                 <chat-tab
                     v-for="userChat in chatOrder"
@@ -12,18 +16,35 @@
                 >
                 </chat-tab>
             </div>
-            <div id="chat" class="col-12 col-lg-9 vh-100">
+
+            <div id="chat" class="col-12 col-md-9 vh-100">
                 <chat-container
                     @loading-messages="handleLoadingMessages"
                     @loaded-messages="handleLoadedMessages"
                 ></chat-container>
             </div>
         </div>
+
+        <div
+            v-if="mobileChatTabsShown"
+            class="position-fixed w-100 vh-100 z-3 bg-primary start-0 top-0 overflow-y-scroll"
+        >
+            <h2 class="bg-primary text-white text-center mb-0 py-2">
+                Your chats
+            </h2>
+            <chat-tab
+                v-for="userChat in chatOrder"
+                @switch-chat="handleSwitchChat"
+                :key="userChat.id"
+                :user-chat="userChat"
+            >
+            </chat-tab>
+        </div>
     </div>
 </template>
 
 <script setup>
-import { onMounted, provide, ref } from "vue";
+import { onMounted, provide, ref, watch } from "vue";
 import { asset, useEmitter } from "../helper";
 
 /*
@@ -153,8 +174,42 @@ function handleSwitchChat(id) {
     // If id is invalid, throw error
     if (newUserChat) {
         currentChat.value = newUserChat;
+        if (mobileChatTabsShown.value) {
+            mobileChatTabsShown.value = false;
+        }
     } else {
         console.error("Invalid user chat id in handleSwitchChat.");
     }
 }
+
+// Swiping logic
+const mobileChatTabsShown = ref(false);
+const swipeStartX = ref(0);
+const swipeEndX = ref(0);
+
+function handleTouchStart(e) {
+    swipeStartX.value = e.changedTouches[0].screenX;
+}
+
+function handleTouchEnd(e) {
+    swipeEndX.value = e.changedTouches[0].screenX;
+
+    const difference = swipeEndX.value - swipeStartX.value;
+    if (difference > 50) {
+        mobileChatTabsShown.value = true;
+    } else if (difference < -50) {
+        mobileChatTabsShown.value = false;
+    }
+}
+
+watch(
+    () => mobileChatTabsShown.value,
+    (newShown, oldShown) => {
+        if (newShown) {
+            document.body.classList.add("no-scroll");
+        } else {
+            document.body.classList.remove("no-scroll");
+        }
+    }
+);
 </script>
