@@ -90,6 +90,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+    // Update the last read value of the current user chat when the chat is closed. (This is only assumed that the chat tab is unmounted when chat is closed.)
     updateLastRead();
 });
 
@@ -118,7 +119,7 @@ async function handleClick() {
 }
 
 /**
- * Makes a post request to update the last read
+ * Makes a post request to update the last read, then sets `read` variable to true.
  */
 async function updateLastRead() {
     try {

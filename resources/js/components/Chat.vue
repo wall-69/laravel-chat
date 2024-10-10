@@ -26,7 +26,7 @@
         </div>
 
         <div
-            v-if="mobileChatTabsShown"
+            v-show="mobileChatTabsShown"
             class="position-fixed w-100 vh-100 z-3 bg-primary start-0 top-0 overflow-y-scroll"
         >
             <h2 class="bg-primary text-white text-center mb-0 py-2">
@@ -182,15 +182,21 @@ function handleSwitchChat(id) {
     }
 }
 
-// Swiping logic
+// Swiping logic (showing chat tabs on mobile)
 const mobileChatTabsShown = ref(false);
 const swipeStartX = ref(0);
 const swipeEndX = ref(0);
 
-function handleTouchStart(e) {
-    swipeStartX.value = e.changedTouches[0].screenX;
+/**
+ * Function for handling the start of a touch on the screen. This saves the `swipeStartX` to the screenX position of where the touch started.
+ */
+function handleTouchStart(event) {
+    swipeStartX.value = event.changedTouches[0].screenX;
 }
 
+/**
+ * Function for handling the end of a touch on the screen. This saves the `swipeEndX` to the screenX position of where the touch ended. Then, if the touch was from left to right, the `mobileChatTabsShown` will be set to true and if it was from right to left it will be set to false.
+ */
 function handleTouchEnd(e) {
     swipeEndX.value = e.changedTouches[0].screenX;
 
@@ -202,6 +208,11 @@ function handleTouchEnd(e) {
     }
 }
 
+/*
+ * WATCHERS
+ */
+
+// Mobile chat tabs watcher - adds the no-scroll class to the <body> element, when mobile chat tabs are shown and removes the class, if they are hidden.
 watch(
     () => mobileChatTabsShown.value,
     (newShown, oldShown) => {
