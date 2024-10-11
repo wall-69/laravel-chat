@@ -5,6 +5,7 @@
         <div class="container pt-3">
             <h1>LaraChat</h1>
             <h2 class="fw-light text-body-secondary">talk, share, connect</h2>
+
             <div class="row row-md g-0 g-lg-5 align-items-center">
                 <div class="col py-5 align-items-start">
                     @auth

@@ -4,6 +4,7 @@
     <x-chat-nav />
     <main class="flex-shrink-0">
         <div class="container py-5">
+            {{-- Check, if the user is not null, if not, show error message --}}
             @isset($user)
                 @php
                     $isMyProfile = auth()->check() && auth()->user()->nickname == $user->nickname;

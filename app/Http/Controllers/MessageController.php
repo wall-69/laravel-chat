@@ -10,18 +10,28 @@ use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {
+    // TODO: should be API?
+
+    /**
+     * Returns `$messagesPerPage` messages based on the specified page.
+     */
     public function index(Request $request, Chat $chat)
     {
-        $page = $request->query("page", 1);
         $messagesPerPage = 15;
 
+        // Get the page
+        $page = $request->query("page", 1);
+
+        // Check, if there are no messages in the chat
         if (count($chat->messages) == 0) {
             return response()->json([
                 "message" => "No messages yet."
             ]);
         }
 
+        // Check, if the user is in this chat
         if (UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chat->id)->exists()) {
+            // Return the messages with the user model alongside, skip all messages that are already loaded, then take $messagesPerPage messages
             return response()->json([
                 "messages" => $chat
                     ->messages()->with('user')
@@ -33,11 +43,16 @@ class MessageController extends Controller
             ]);
         }
 
+        // Abort, if the user is not in the chat
         abort(401);
     }
 
+    /**
+     * Store the message with specified data.
+     */
     public function store(Request $request, Chat $chat)
     {
+        // Validate
         $data = $request->validate([
             "message" => "required|min:1"
         ]);
@@ -55,6 +70,7 @@ class MessageController extends Controller
 
             // Add User to the message
             $message->user = auth()->user();
+            // Broadcast MessageSent event
             event(new MessageSent($message));
 
             // Update last message timestamp in chat

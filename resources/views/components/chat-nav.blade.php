@@ -14,6 +14,7 @@
                     Channels
                 </a>
             </li>
+            {{-- My profile and Log out buttons --}}
             @auth
                 <li>
                     @php
@@ -53,6 +54,7 @@
                         Channels
                     </a>
                 </li>
+                {{-- My profile and Log out buttons --}}
                 @auth
                     <li>
                         @php

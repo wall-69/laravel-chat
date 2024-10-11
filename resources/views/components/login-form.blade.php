@@ -9,6 +9,7 @@
 
     <h3 class="py-3 fw-light">Login to LaraChat</h3>
 
+    {{-- Email --}}
     <div class="w-100 d-flex flex-column">
         <label for="email" class="text-start fw-bold">email:</label>
         <input type="email" name="email" class="py-2 px-1" value="{{ old('email') }}">
@@ -17,6 +18,7 @@
         @enderror
     </div>
 
+    {{-- Password --}}
     <div class="w-100 d-flex flex-column">
         <label for="password" class="text-start fw-bold">password:</label>
         <input type="password" name="password" class="py-2 px-1" value="{{ old('password') }}">
