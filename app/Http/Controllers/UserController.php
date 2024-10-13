@@ -45,7 +45,7 @@ class UserController extends Controller
         ]);
 
         // Profile picture
-        $filePath = $request->file("profile_picture")->store("img/pfp", "public");
+        $filePath = $request->profile_picture->store("img/pfp", "public");
         $data["profile_picture"] = "storage/" . $filePath;
 
         // Create model and login

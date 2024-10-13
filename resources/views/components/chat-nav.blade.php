@@ -10,7 +10,8 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="text-white fs-5 {{ request()->is('channels') ? 'fw-bold' : '' }}">
+                <a href="{{ route('chat.channels') }}"
+                    class="text-white fs-5 {{ request()->is('channels') ? 'fw-bold' : '' }}">
                     Channels
                 </a>
             </li>

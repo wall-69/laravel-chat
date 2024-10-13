@@ -38,23 +38,62 @@ class ChatController extends Controller
     }
 
     /**
+     * Shows the channels page.
+     */
+    public function channels()
+    {
+        $channels = Chat::whereIsPrivate(false)->get();
+
+        return view("chat.channels", ["channels" => $channels]);
+    }
+
+    /**
+     * Shows the chat(channel) create page.
+     */
+    public function create()
+    {
+        return view("chat.create");
+    }
+
+    /**
      * Stores the chat with specified users and also creates UserChats.
      */
     public function store(Request $request)
     {
         // Validate
         $request->validate([
-            "users" => "required"
+            "users" => "required",
         ]);
 
         $chat = null;
+        $chat_picture = null;
         $users = []; // Array for the User models
         foreach ($request->users as $userId) {
             $users[] = User::find($userId);
         }
 
-        // If there are only 2 users, create private chat
-        if (count($users) == 2) {
+        // Check, if the first user which is creating is actually the one authenticated
+        if ($users[0]->id != auth()->user()->id) {
+            abort(400);
+        }
+
+        // If there are only 1 users, create channel, else a private chat
+        if (count($users) == 1) {
+            $request->validate([
+                "name" => "required|min:3",
+                "is_private" => "required|bool",
+                "chat_picture" => "required|image"
+            ]);
+
+            // Chat picture
+            $filePath = $request->chat_picture->store("img/chat_pictures", "public");
+            $chat_picture = "storage/" . $filePath;
+
+            $chat = Chat::create([
+                "name" => $request->name,
+                "is_private" => $request->is_private,
+            ]);
+        } else {
             // Check, if there is a UserBlock between these two users
             if ($users[1]->userBlocks->contains("blocked_user_id", $users[0]->id)) {
                 return back();
@@ -76,8 +115,6 @@ class ChatController extends Controller
                 // Update the last_message column to current time, to make it appear at the top of chat order
                 $chat->update(["last_message" => now()->toISOString()]);
             }
-        } else {
-            // TODO: group chat
         }
 
         // Create the UserChat for all users in the array
@@ -88,11 +125,13 @@ class ChatController extends Controller
             }
 
             // Create the UserChat
-            $userChat = UserChat::create([
+            UserChat::create([
                 "user_id" => $user->id,
                 "chat_id" => $chat->id,
-                "name" => str_replace(",", "", str_replace($user->nickname, "", $chat->name)),
-                "picture" => count($users) == 2 ? ($user->id == $users[0]["id"] ? $users[1]["profile_picture"] : $users[0]["profile_picture"]) : "img/chat/default_chat_picture.svg"
+                // TODO: cleanup or whatefver this fukcing sucks
+                "name" => count($users) == 2 ? str_replace(",", "", str_replace($user->nickname, "", $chat->name)) : $chat->name,
+                // If there is no chat picture set, that means it is not a channel and the chat picture will be the profile picture of the other user
+                "picture" => $chat_picture ?? ($user->id == $users[0]["id"] ? $users[1]["profile_picture"] : $users[0]["profile_picture"])
             ]);
         }
 

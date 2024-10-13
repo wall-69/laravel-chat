@@ -36,6 +36,8 @@ Route::controller(UserController::class)->name("users.")->group(function () {
 Route::controller(ChatController::class)->name("chat.")->group(function () {
     Route::middleware("auth")->group(function () {
         Route::get("/chat", "index")->name("index");
+        Route::get("/chat/create", "create")->name("create");
+        Route::get("/channels", "channels")->name("channels");
 
         Route::post("/chat", "store")->name("store");
     });

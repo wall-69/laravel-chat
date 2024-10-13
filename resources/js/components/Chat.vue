@@ -116,10 +116,14 @@ async function joinPrivateChannel(channelName) {
 
             // Re-sort the chats
             chatOrder.value.sort((a, b) => {
-                return (
-                    new Date(b.chat.last_message.created_at) -
-                    new Date(a.chat.last_message.created_at)
-                );
+                const dateA = a.chat.last_message
+                    ? new Date(a.chat.last_message.created_at)
+                    : 0;
+                const dateB = b.chat.last_message
+                    ? new Date(b.chat.last_message.created_at)
+                    : 0;
+
+                return dateA === dateB ? 1 : dateB - dateA;
             });
 
             // Scroll to the scroll position the user actually had
