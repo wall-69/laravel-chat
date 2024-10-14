@@ -17,7 +17,20 @@
         </div>
 
         @foreach ($channels as $channel)
-            {{ $channel }}
+            <div class="d-flex flex-column">
+                {{ $channel->name }}
+
+                @if (auth()->user()->userChats->doesntContain('chat_id', $channel->id))
+                    <form method="POST" action="{{ route('chat.join', $channel->id) }}">
+                        @method('POST')
+                        @csrf
+
+                        <button type="submit">Join</button>
+                    </form>
+                @else
+                    <p>you are already in this channel!</p>
+                @endif
+            </div>
         @endforeach
     </main>
 

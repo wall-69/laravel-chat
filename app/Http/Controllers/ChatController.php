@@ -137,4 +137,23 @@ class ChatController extends Controller
 
         return redirect(route("chat.index"));
     }
+
+    /**
+     * Adds the user to this chat (by creating UserChat of this chat for him)
+     */
+    public function join(Chat $chat)
+    {
+        if (UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chat->id)->exists()) {
+            abort(400, "You are already in this chat.");
+        }
+
+        UserChat::create([
+            "user_id" => auth()->user()->id,
+            "chat_id" => $chat->id,
+            "name" => $chat->name,
+            "picture" => UserChat::where("user_id", $chat->chatAdmin->user->id)->where("chat_id", $chat->id)->first()->picture
+        ]);
+
+        return redirect(route("chat.index"));
+    }
 }

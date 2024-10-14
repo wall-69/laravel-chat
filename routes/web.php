@@ -40,6 +40,7 @@ Route::controller(ChatController::class)->name("chat.")->group(function () {
         Route::get("/channels", "channels")->name("channels");
 
         Route::post("/chat", "store")->name("store");
+        Route::post("/chat/{chat}/join", "join")->name("join");
     });
 });
 
