@@ -36,4 +36,9 @@ class Chat extends Model
     {
         return $this->hasOne(ChatAdmin::class);
     }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, "user_chats");
+    }
 }

@@ -45,6 +45,26 @@
                     'd-none': !actionsShown,
                 }"
             >
+                <span class="text-center fw-bold">{{ currentChat.name }} </span>
+                <hr />
+                <form
+                    method="POST"
+                    :action="route('chat.leave', currentChat.chat.id)"
+                >
+                    <input
+                        type="hidden"
+                        name="_token"
+                        :value="axios.defaults.headers.common['X-CSRF-TOKEN']"
+                    />
+
+                    <button
+                        type="submit"
+                        class="border-0 bg-transparent d-flex align-items-center align-items-center gap-2 mb-1"
+                    >
+                        <i class="bx bx-minus bx-sm"></i>
+                        <span class="fw-bold">Leave</span>
+                    </button>
+                </form>
                 <button
                     @click="toggleActionsShown"
                     class="border-0 bg-transparent d-flex align-items-center gap-2"
@@ -146,6 +166,7 @@
 </template>
 
 <script setup>
+import axios from "axios";
 import { asset, useEmitter } from "../helper";
 import { inject, nextTick, onMounted, ref, watch } from "vue";
 

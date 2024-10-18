@@ -20,6 +20,7 @@ class ChatController extends Controller
             ->with([
                 "chat",
                 "chat.lastMessage.user:id,nickname",
+                "chat.users:id,nickname"
             ])
             ->get()
             ->sortByDesc(function ($userChat) {
@@ -161,6 +162,21 @@ class ChatController extends Controller
             "name" => $chat->name,
             "picture" => UserChat::where("user_id", $chat->chatAdmin->user->id)->where("chat_id", $chat->id)->first()->picture
         ]);
+
+        return redirect(route("chat.index"));
+    }
+
+    /**
+     * Removes the user from this chat (by deleting UserChat of this chat for him)
+     */
+    public function leave(Chat $chat)
+    {
+        if (!UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chat->id)->exists()) {
+            abort(400, "You are not in this chat.");
+        }
+
+        UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chat->id)->delete();
+        ChatAdmin::where("user_id", auth()->user()->id)->where("chat_id", $chat->id)->delete();
 
         return redirect(route("chat.index"));
     }

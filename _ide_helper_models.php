@@ -21,11 +21,14 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $last_message
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\ChatAdmin|null $chatAdmin
  * @property-read \App\Models\Message|null $lastMessage
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Message> $messages
  * @property-read int|null $messages_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserChat> $userChats
  * @property-read int|null $user_chats_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property-read int|null $users_count
  * @method static \Illuminate\Database\Eloquent\Builder|Chat newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Chat newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Chat query()
@@ -44,12 +47,35 @@ namespace App\Models{
  * 
  *
  * @property int $id
+ * @property int $chat_id
  * @property int $user_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Chat $chat
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|ChatAdmin newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ChatAdmin newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ChatAdmin query()
+ * @method static \Illuminate\Database\Eloquent\Builder|ChatAdmin whereChatId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ChatAdmin whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ChatAdmin whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ChatAdmin whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ChatAdmin whereUserId($value)
+ */
+	class ChatAdmin extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
+ * @property int|null $user_id
  * @property int $chat_id
  * @property string $content
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Chat|null $chat
+ * @property-read \App\Models\Chat $chat
  * @property-read \App\Models\User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder|Message newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Message newQuery()
@@ -111,8 +137,8 @@ namespace App\Models{
  * @property int $blocked_user_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\User|null $blockedUser
- * @property-read \App\Models\User|null $user
+ * @property-read \App\Models\User $blockedUser
+ * @property-read \App\Models\User $user
  * @method static \Illuminate\Database\Eloquent\Builder|UserBlock newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserBlock newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserBlock query()
@@ -137,7 +163,8 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $last_read
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Chat|null $chat
+ * @property-read \App\Models\Chat $chat
+ * @property-read \App\Models\User $user
  * @method static \Illuminate\Database\Eloquent\Builder|UserChat newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserChat newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserChat query()
