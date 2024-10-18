@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('user_chats', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class)->onDelete("cascade");
-            $table->foreignIdFor(Chat::class)->onDelete("cascade");
+            $table->foreignIdFor(User::class)->constrained()->onDelete("cascade");
+            $table->foreignIdFor(Chat::class)->constrained()->onDelete("cascade");
             $table->string("name");
             $table->string("picture");
             $table->timestamp("last_read")->nullable();

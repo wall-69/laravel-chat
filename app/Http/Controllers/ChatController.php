@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Chat;
+use App\Models\ChatAdmin;
 use App\Models\User;
 use App\Models\UserChat;
 use Illuminate\Http\Request;
@@ -89,9 +90,16 @@ class ChatController extends Controller
             $filePath = $request->chat_picture->store("img/chat_pictures", "public");
             $chat_picture = "storage/" . $filePath;
 
+            // Create the Chat
             $chat = Chat::create([
                 "name" => $request->name,
                 "is_private" => $request->is_private,
+            ]);
+
+            // Make the user a ChatAdmin
+            ChatAdmin::create([
+                "user_id" => $users[0]->id,
+                "chat_id" => $chat->id
             ]);
         } else {
             // Check, if there is a UserBlock between these two users

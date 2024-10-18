@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class)->onDelete("set null");
-            $table->foreignIdFor(Chat::class)->onDelete("cascade");
+            $table->foreignIdFor(User::class)->nullable()->constrained()->onDelete("set null");
+            $table->foreignIdFor(Chat::class)->constrained()->onDelete("cascade");
             $table->text("content");
             $table->timestamps();
         });

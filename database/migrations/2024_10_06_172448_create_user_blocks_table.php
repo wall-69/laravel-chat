@@ -14,8 +14,8 @@ return new class extends Migration
     {
         Schema::create('user_blocks', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class, "user_id");
-            $table->foreignIdFor(User::class, "blocked_user_id");
+            $table->foreignIdFor(User::class, "user_id")->constrained()->onDelete("cascade");
+            $table->foreignIdFor(User::class, "blocked_user_id")->constrained("users")->onDelete("cascade");
             $table->timestamps();
         });
     }
