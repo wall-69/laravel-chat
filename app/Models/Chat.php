@@ -10,7 +10,7 @@ class Chat extends Model
     use HasFactory;
 
     protected $fillable = [
-        "name", "is_private", "last_message"
+        "name", "type", "is_private", "last_message"
     ];
 
     protected $casts = [
@@ -40,5 +40,15 @@ class Chat extends Model
     public function users()
     {
         return $this->belongsToMany(User::class, "user_chats");
+    }
+
+    public function isDM()
+    {
+        return $this->type == "dm";
+    }
+
+    public function isChannel()
+    {
+        return $this->type == "channel";
     }
 }

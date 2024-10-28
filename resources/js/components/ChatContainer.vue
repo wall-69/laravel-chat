@@ -47,7 +47,9 @@
             >
                 <span class="text-center fw-bold">{{ currentChat.name }} </span>
                 <hr />
+                <!-- LEAVE CHANNEL BUTTON -->
                 <form
+                    v-if="currentChat.chat.type == 'channel'"
                     method="POST"
                     :action="route('chat.leave', currentChat.chat.id)"
                 >

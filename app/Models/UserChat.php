@@ -26,4 +26,14 @@ class UserChat extends Model
     {
         return $this->belongsTo(Chat::class);
     }
+
+    public function isDM()
+    {
+        return $this->chat->isDM();
+    }
+
+    public function isChannel()
+    {
+        return $this->chat->isChannel();
+    }
 }
