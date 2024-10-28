@@ -79,7 +79,7 @@ class ChatController extends Controller
             abort(400);
         }
 
-        // If there are only 1 users, create channel, else a private chat
+        // If there is only 1 user, create channel, else a private chat
         if (count($users) == 1) {
             $request->validate([
                 "name" => "required|min:3",
@@ -94,6 +94,7 @@ class ChatController extends Controller
             // Create the Chat
             $chat = Chat::create([
                 "name" => $request->name,
+                "type" => "channel",
                 "is_private" => $request->is_private,
             ]);
 
@@ -118,6 +119,7 @@ class ChatController extends Controller
             if (!$chat) {
                 $chat = Chat::create([
                     "name" => $users[0]["nickname"] . "," . $users[1]["nickname"],
+                    "type" => "dm",
                     "is_private" => true,
                 ]);
             } else {
