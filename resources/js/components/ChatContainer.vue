@@ -20,7 +20,7 @@
                     />
                     <!-- Chat name -->
                     <component
-                        :is="currentChat.chat.is_private ? 'a' : 'p'"
+                        :is="currentChat.chat.type == 'dm' ? 'a' : 'p'"
                         :href="'/profile/' + currentChat.name"
                         class="m-0 text-white fw-bold"
                     >
