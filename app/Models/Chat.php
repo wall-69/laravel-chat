@@ -32,7 +32,7 @@ class Chat extends Model
         return $this->hasOne(Message::class)->latestOfMany();
     }
 
-    public function chatAdmin()
+    public function admin()
     {
         return $this->hasOne(ChatAdmin::class);
     }

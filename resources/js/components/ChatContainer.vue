@@ -50,14 +50,41 @@
 
             <!-- Chat actions -->
             <div
-                role="button"
-                class="bg-white p-3 rounded-3 position-absolute end-0 d-flex flex-column"
+                ref="chatActions"
+                class="bg-white p-3 rounded-3 position-absolute end-0 d-flex flex-column align-items-start overflow-y-scroll w-100 max-h-75"
                 :class="{
                     'd-none': !actionsShown,
                 }"
             >
-                <span class="text-center fw-bold">{{ currentChat.name }} </span>
-                <hr />
+                <!-- CHAT NAME -->
+                <span class="text-center fw-bold">{{ currentChat.name }}</span>
+                <hr class="w-100" />
+                <!-- USERS LIST -->
+                <p>Users ({{ currentChat.chat.users.length }}):</p>
+                <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
+                    <li
+                        v-for="user in currentChat.chat.users"
+                        class="d-flex align-items-center gap-2"
+                    >
+                        <img
+                            :src="asset(user.profile_picture)"
+                            :alt="user.nickname + ' profile picture'"
+                            class="rounded-circle"
+                            height="45"
+                            width="45"
+                        />
+                        <span>
+                            {{ user.nickname }}
+                            {{
+                                currentChat.chat.type == "channel" &&
+                                user.id == currentChat.chat.admin.user_id
+                                    ? "(Admin)"
+                                    : ""
+                            }}
+                        </span>
+                    </li>
+                </ul>
+                <hr class="w-100" />
                 <!-- LEAVE CHANNEL BUTTON -->
                 <form
                     v-if="currentChat.chat.type == 'channel'"
@@ -78,6 +105,7 @@
                         <span class="fw-bold">Leave</span>
                     </button>
                 </form>
+                <!-- TOGGLE ACTIONS BUTTON -->
                 <button
                     @click="toggleActionsShown"
                     class="border-0 bg-transparent d-flex align-items-center gap-2"
@@ -169,7 +197,10 @@
                 You don't have any chats.
                 <br />
                 Explore channels here:
-                <a href="#" class="text-decoration-underline text-accent">
+                <a
+                    :href="route('chat.channels')"
+                    class="text-decoration-underline text-accent"
+                >
                     Channels
                 </a>
                 !
@@ -225,10 +256,15 @@ const currentChat = inject("currentChat");
 const currentUser = inject("currentUser");
 
 // Chat actions
+const chatActions = ref(null);
 const actionsShown = ref(false);
 
 function toggleActionsShown() {
     actionsShown.value = !actionsShown.value;
+    // Scroll to the top each time the chat actions menu is shown
+    if (actionsShown.value) {
+        chatActions.value.scrollTop = 0;
+    }
 }
 
 // Scroll message loading variables

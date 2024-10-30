@@ -17,33 +17,45 @@ $link-hover-decoration: underline;
 @import "bootstrap/scss/functions";
 @import "bootstrap/scss/variables";
 
+// Custom min/max width/height
+$size-values: (
+    0: 0,
+    25: 25%,
+    50: 50%,
+    75: 75%,
+    100: 100%,
+    auto: auto,
+);
+
+// Max height
+@each $key, $value in $size-values {
+    .max-h-#{$key} {
+        max-height: $value;
+    }
+    .min-h-#{$key} {
+        min-height: $value;
+    }
+    .max-w-#{$key} {
+        max-width: $value;
+    }
+    .min-w-#{$key} {
+        min-width: $value;
+    }
+}
+
+// Font
+$font-family-sans-serif: "Montserrat";
+
+// Custom colors
 $custom-colors: (
     "secondary": $secondary,
     "accent": $accent,
     "divider": $divider,
 );
 
-$font-family-sans-serif: "Montserrat";
-
 $theme-colors: map-merge($theme-colors, $custom-colors);
 
-$utilities: (
-    "width": (
-        property: width,
-        class: w,
-        responsive: true,
-        values: (
-            25: 25%,
-            33: 33%,
-            50: 50%,
-            66: 66%,
-            75: 75%,
-            100: 100%,
-            auto: auto,
-        ),
-    ),
-);
-
+// Spacers
 $spacers: (
     (
         0: 0,
@@ -93,10 +105,6 @@ $spacers: (
 
 .sent-message-shadow {
     box-shadow: -0.5rem 0.5rem 1rem rgba($black, 0.25);
-}
-
-.min-w-0 {
-    min-width: 0;
 }
 
 .no-scroll {
