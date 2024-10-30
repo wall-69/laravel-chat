@@ -10,7 +10,15 @@
     >
         <!-- Chat Picture -->
         <img
-            :src="asset(userChat.picture)"
+            :src="
+                userChat.chat.type == 'dm'
+                    ? asset(
+                          userChat.chat.users[0].id == currentUser.id
+                              ? userChat.chat.users[1].profile_picture
+                              : userChat.chat.users[0].profile_picture
+                      )
+                    : asset(userChat.chat.picture)
+            "
             :alt="userChat.name + ' profile picture'"
             class="bg-white rounded-circle"
             width="65"

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string("name");
             $table->enum("type", ["dm", "channel"]);
+            $table->string("picture");
             $table->boolean("is_private");
             $table->timestamp("last_message")->nullable();
             $table->timestamps();

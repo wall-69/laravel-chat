@@ -54,7 +54,6 @@ import { asset, useEmitter } from "../helper";
 const props = defineProps({
     currentUser: Object,
     chatOrder: Array,
-    userChats: Array,
 });
 
 /*
@@ -171,7 +170,7 @@ function handleSwitchChat(id) {
     }
 
     // Find the new user chat based on the id provided
-    const newUserChat = props.userChats.find((userChat) => {
+    const newUserChat = props.chatOrder.find((userChat) => {
         return userChat.id == id;
     });
 

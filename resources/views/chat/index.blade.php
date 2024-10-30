@@ -4,8 +4,7 @@
     <x-chat-nav />
 
     <main>
-        <chat :current-user="{{ auth()->user() }}" :chat-order="{{ json_encode($chatOrder) }}"
-            :user-chats="{{ auth()->user()->userChats()->with('chat')->get() }}"></chat>
+        <chat :current-user="{{ auth()->user() }}" :chat-order="{{ json_encode($chatOrder) }}"></chat>
     </main>
 
     <x-footer />

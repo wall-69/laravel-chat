@@ -12,7 +12,18 @@
                 <div class="d-flex align-items-center gap-2">
                     <!-- Chat picture -->
                     <img
-                        :src="asset(currentChat.picture)"
+                        :src="
+                            currentChat.chat.type == 'dm'
+                                ? asset(
+                                      currentChat.chat.users[0].id ==
+                                          currentUser.id
+                                          ? currentChat.chat.users[1]
+                                                .profile_picture
+                                          : currentChat.chat.users[0]
+                                                .profile_picture
+                                  )
+                                : asset(currentChat.chat.picture)
+                        "
                         :alt="currentChat.name + ' profile picture'"
                         class="bg-white rounded-circle"
                         height="45"

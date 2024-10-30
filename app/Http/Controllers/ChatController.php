@@ -19,8 +19,9 @@ class ChatController extends Controller
         $chatOrder = auth()->user()->userChats()
             ->with([
                 "chat",
+                "chat.chatAdmin.user:id,nickname",
                 "chat.lastMessage.user:id,nickname",
-                "chat.users:id,nickname"
+                "chat.users:id,nickname,profile_picture"
             ])
             ->get()
             ->sortByDesc(function ($userChat) {
@@ -95,6 +96,7 @@ class ChatController extends Controller
             $chat = Chat::create([
                 "name" => $request->name,
                 "type" => "channel",
+                "picture" => $chat_picture,
                 "is_private" => $request->is_private,
             ]);
 
@@ -120,6 +122,7 @@ class ChatController extends Controller
                 $chat = Chat::create([
                     "name" => $users[0]["nickname"] . "," . $users[1]["nickname"],
                     "type" => "dm",
+                    "picture" => "other user",
                     "is_private" => true,
                 ]);
             } else {
@@ -142,7 +145,6 @@ class ChatController extends Controller
                 // TODO: cleanup or whatefver this fukcing sucks
                 "name" => count($users) == 2 ? str_replace(",", "", str_replace($user->nickname, "", $chat->name)) : $chat->name,
                 // If there is no chat picture set, that means it is not a channel and the chat picture will be the profile picture of the other user
-                "picture" => $chat_picture ?? ($user->id == $users[0]["id"] ? $users[1]["profile_picture"] : $users[0]["profile_picture"])
             ]);
         }
 
@@ -162,7 +164,7 @@ class ChatController extends Controller
             "user_id" => auth()->user()->id,
             "chat_id" => $chat->id,
             "name" => $chat->name,
-            "picture" => UserChat::where("user_id", $chat->chatAdmin->user->id)->where("chat_id", $chat->id)->first()->picture
+            "picture" => $chat->picture
         ]);
 
         return redirect(route("chat.index"));
@@ -173,12 +175,17 @@ class ChatController extends Controller
      */
     public function leave(Chat $chat)
     {
-        if (!UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chat->id)->exists()) {
-            abort(400, "You are not in this chat.");
-        }
+        // Get the UserChat or abort
+        $userChat = UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chat->id)->firstOrFail();
+        $chat = $userChat->chat; // Get the Chat, if we need to delete it after
 
-        UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chat->id)->delete();
+        $userChat->delete();
         ChatAdmin::where("user_id", auth()->user()->id)->where("chat_id", $chat->id)->delete();
+
+        // If there are no more users in this channel, delete it
+        if ($chat->isChannel() && $chat->users->count() == 0) {
+            $chat->delete();
+        }
 
         return redirect(route("chat.index"));
     }

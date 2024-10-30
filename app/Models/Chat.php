@@ -10,7 +10,7 @@ class Chat extends Model
     use HasFactory;
 
     protected $fillable = [
-        "name", "type", "is_private", "last_message"
+        "name", "type", "picture", "is_private", "last_message"
     ];
 
     protected $casts = [
