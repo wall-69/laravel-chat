@@ -3,7 +3,7 @@
 @section('content')
     <x-chat-nav />
     <main class="flex-shrink-0">
-        <div class="container py-5">
+        <div class="py-5">
             {{-- Check, if the user is not null, if not, show error message --}}
             @isset($user)
                 @php
@@ -12,7 +12,7 @@
                     $messageCount = $user->messages()->count();
                     $userChatCount = $user->userChats()->count();
                 @endphp
-                <div class="d-flex gap-5 justify-content-center">
+                <div class="d-flex flex-md-row flex-column container gap-5 justify-content-center">
                     {{-- Column 1 --}}
                     <div class="d-flex flex-column gap-5">
                         {{-- Profile card --}}
@@ -127,10 +127,10 @@
                         @else
                             <div class="px-3 py-2 bg-secondary rounded-4 shadow d-flex flex-column gap-2">
                                 {{--
-                                    Show Start chat button to:
-                                    - guest users
-                                    - users that dont have a UserChat with this user AND none of these 2 users block each other
-                                --}}
+                        Show Start chat button to:
+                        - guest users
+                        - users that dont have a UserChat with this user AND none of these 2 users block each other
+                    --}}
                                 @if (
                                     !auth()->check() ||
                                         (auth()->user()->userChats->doesntContain('name', $user->nickname) &&

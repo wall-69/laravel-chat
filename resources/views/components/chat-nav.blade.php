@@ -51,7 +51,8 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="dropdown-item fs-5 {{ request()->is('channels') ? 'fw-bold' : '' }}">
+                    <a href="{{ route('chat.channels') }}"
+                        class="dropdown-item fs-5 {{ request()->is('channels') ? 'fw-bold' : '' }}">
                         Channels
                     </a>
                 </li>
