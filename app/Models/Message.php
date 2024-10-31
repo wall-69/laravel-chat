@@ -10,7 +10,7 @@ class Message extends Model
     use HasFactory;
 
     protected $fillable = [
-        "user_id", "chat_id", "content",
+        "user_id", "chat_id", "type", "content",
     ];
 
     public function user()
@@ -29,12 +29,13 @@ class Message extends Model
             "id" => $this->id,
             "user_id" => $this->user_id,
             "chat_id" => $this->chat_id,
+            "type" => $this->type,
             "content" => $this->content,
             "created_at" => $this->created_at,
             "user" => [
-                "id" => $this->user->id,
-                "nickname" => $this->user->nickname,
-                "profile_picture" => $this->user->profile_picture,
+                "id" => $this->user?->id,
+                "nickname" => $this->user?->nickname,
+                "profile_picture" => $this->user?->profile_picture,
             ],
         ];
     }

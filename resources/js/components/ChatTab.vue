@@ -35,7 +35,11 @@
             <p class="m-0 text-white fw-light small text-truncate">
                 {{
                     lastMessage
-                        ? lastMessage.user.nickname + ": " + lastMessage.content
+                        ? lastMessage.type == "user"
+                            ? lastMessage.user.nickname +
+                              ": " +
+                              lastMessage.content
+                            : lastMessage.content
                         : "No messages sent yet."
                 }}
             </p>

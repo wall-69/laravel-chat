@@ -158,13 +158,24 @@
                     v-if="messages.length > 0"
                     v-for="message in messages"
                 >
-                    <!-- IF message.user_id == currentUser.id -->
+                    <!-- Notification -->
+                    <p
+                        v-if="message.type == 'notification'"
+                        class="text-white text-center"
+                    >
+                        {{ message.content }}
+                    </p>
+
+                    <!-- Sent message -->
                     <chat-sent-message
-                        v-if="message.user_id == currentUser.id"
+                        v-else-if="
+                            message.type == 'user' &&
+                            message.user_id == currentUser.id
+                        "
                         :message="message.content"
                     ></chat-sent-message>
 
-                    <!-- ELSE -->
+                    <!-- Received message -->
                     <chat-received-message
                         v-else
                         :user="message.user"

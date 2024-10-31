@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class)->nullable()->constrained()->onDelete("set null");
             $table->foreignIdFor(Chat::class)->constrained()->onDelete("cascade");
+            $table->enum("type", ["user", "notification"]);
             $table->text("content");
             $table->timestamps();
         });

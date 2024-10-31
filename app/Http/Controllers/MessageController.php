@@ -64,6 +64,7 @@ class MessageController extends Controller
                 [
                     "user_id" => auth()->user()->id,
                     "chat_id" => $chat->id,
+                    "type" => "user",
                     "content" => $data["message"]
                 ]
             );

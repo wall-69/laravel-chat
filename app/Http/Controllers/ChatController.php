@@ -6,10 +6,18 @@ use App\Models\Chat;
 use App\Models\ChatAdmin;
 use App\Models\User;
 use App\Models\UserChat;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class ChatController extends Controller
 {
+    protected NotificationService $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
+
     /**
      * Shows the chat index page.
      */
@@ -167,6 +175,8 @@ class ChatController extends Controller
             "picture" => $chat->picture
         ]);
 
+        $this->notificationService->chat($chat, auth()->user()->nickname . " has joined.");
+
         return redirect(route("chat.index"));
     }
 
@@ -181,6 +191,8 @@ class ChatController extends Controller
 
         $userChat->delete();
         ChatAdmin::where("user_id", auth()->user()->id)->where("chat_id", $chat->id)->delete();
+
+        $this->notificationService->chat($chat, auth()->user()->nickname . " has left.");
 
         // If there are no more users in this channel, delete it
         if ($chat->isChannel() && $chat->users->count() == 0) {
