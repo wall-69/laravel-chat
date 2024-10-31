@@ -51,6 +51,7 @@
             <!-- Chat actions -->
             <div
                 ref="chatActions"
+                @touchstart.stop
                 class="bg-white p-3 rounded-3 position-absolute end-0 d-flex flex-column align-items-start overflow-y-scroll w-100 max-h-75"
                 :class="{
                     'd-none': !actionsShown,
@@ -66,6 +67,7 @@
                         v-for="user in currentChat.chat.users"
                         class="d-flex align-items-center gap-2"
                     >
+                        <!-- USER PROFILE PICTURE -->
                         <img
                             :src="asset(user.profile_picture)"
                             :alt="user.nickname + ' profile picture'"
@@ -73,6 +75,7 @@
                             height="45"
                             width="45"
                         />
+                        <!-- USER NICKNAME -->
                         <span>
                             {{ user.nickname }}
                             {{
@@ -82,6 +85,18 @@
                                     : ""
                             }}
                         </span>
+                        <!-- ADMIN KICK/BAN BUTTONS -->
+                        <template
+                            v-if="
+                                currentChat.chat.type == 'channel' &&
+                                currentUser.id ==
+                                    currentChat.chat.admin.user_id &&
+                                user.id != currentUser.id
+                            "
+                        >
+                            <button class="btn btn-warning p-1">Kick</button>
+                            <button class="btn btn-danger p-1">Ban</button>
+                        </template>
                     </li>
                 </ul>
                 <hr class="w-100" />
