@@ -76,7 +76,7 @@
                             width="45"
                         />
                         <!-- USER NICKNAME -->
-                        <span>
+                        <a :href="route('users.show', user.nickname)">
                             {{ user.nickname }}
                             {{
                                 currentChat.chat.type == "channel" &&
@@ -84,7 +84,7 @@
                                     ? "(Admin)"
                                     : ""
                             }}
-                        </span>
+                        </a>
                         <!-- ADMIN KICK/BAN BUTTONS -->
                         <template
                             v-if="
@@ -102,7 +102,10 @@
                 <hr class="w-100" />
                 <!-- ADMIN ACTIONS -->
                 <template
-                    v-if="currentUser.id == currentChat.chat.admin.user_id"
+                    v-if="
+                        currentChat.chat.type == 'channel' &&
+                        currentUser.id == currentChat.chat.admin.user_id
+                    "
                 >
                     <!-- Rename -->
                     <chat-admin-form :chat="currentChat" action-name="Rename">
@@ -167,7 +170,7 @@
 
                     <button
                         type="submit"
-                        class="border-0 bg-transparent d-flex align-items-center align-items-center gap-2 mb-1"
+                        class="border-0 bg-transparent d-flex align-items-center align-items-center gap-2 text-black px-0 mb-1"
                     >
                         <i class="bx bx-minus bx-sm"></i>
                         <span class="fw-bold">Leave</span>
@@ -176,7 +179,7 @@
                 <!-- TOGGLE ACTIONS BUTTON -->
                 <button
                     @click="toggleActionsShown"
-                    class="border-0 bg-transparent d-flex align-items-center gap-2"
+                    class="border-0 bg-transparent d-flex align-items-center gap-2 text-black px-0"
                 >
                     <i class="bx bx-x bx-sm"></i>
                     <span class="fw-bold">Close</span>

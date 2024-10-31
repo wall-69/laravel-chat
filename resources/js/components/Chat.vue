@@ -5,6 +5,7 @@
         class="px-2 px-md-0 container-md py-5"
     >
         <div class="row gx-0 gx-md-5">
+            <!-- Desktop ChatTabs -->
             <div
                 class="d-none d-md-block col-3 rounded-3 bg-secondary bg-gradient shadow p-0 overflow-x-scroll overflow-y-scroll"
             >
@@ -17,6 +18,7 @@
                 </chat-tab>
             </div>
 
+            <!-- ChatContainer -->
             <div id="chat" class="col-12 col-md-9 vh-100">
                 <chat-container
                     @loading-messages="handleLoadingMessages"
@@ -25,21 +27,24 @@
             </div>
         </div>
 
-        <div
-            v-show="mobileChatTabsShown"
-            class="position-fixed w-100 vh-100 z-3 bg-primary start-0 top-0 overflow-y-scroll"
-        >
-            <h2 class="bg-primary text-white text-center mb-0 py-2">
-                Your chats
-            </h2>
-            <chat-tab
-                v-for="userChat in chatOrder"
-                @switch-chat="handleSwitchChat"
-                :key="userChat.id"
-                :user-chat="userChat"
+        <!-- Mobile ChatTabs -->
+        <transition name="slide">
+            <div
+                v-show="mobileChatTabsShown"
+                class="position-fixed w-100 vh-100 z-3 bg-primary start-0 top-0 overflow-y-scroll"
             >
-            </chat-tab>
-        </div>
+                <h2 class="bg-primary text-white text-center mb-0 py-2">
+                    Your chats
+                </h2>
+                <chat-tab
+                    v-for="userChat in chatOrder"
+                    @switch-chat="handleSwitchChat"
+                    :key="userChat.id"
+                    :user-chat="userChat"
+                >
+                </chat-tab>
+            </div>
+        </transition>
     </div>
 </template>
 
@@ -188,13 +193,16 @@ function handleSwitchChat(id) {
 // Swiping logic (showing chat tabs on mobile)
 const mobileChatTabsShown = ref(false);
 const swipeStartX = ref(0);
+const swipeStartY = ref(0);
 const swipeEndX = ref(0);
+const swipeEndY = ref(0);
 
 /**
  * Function for handling the start of a touch on the screen. This saves the `swipeStartX` to the screenX position of where the touch started.
  */
 function handleTouchStart(event) {
     swipeStartX.value = event.changedTouches[0].screenX;
+    swipeStartY.value = event.changedTouches[0].screenY;
 }
 
 /**
@@ -202,13 +210,19 @@ function handleTouchStart(event) {
  */
 function handleTouchEnd(e) {
     swipeEndX.value = e.changedTouches[0].screenX;
+    swipeEndY.value = e.changedTouches[0].screenY;
 
-    const difference = swipeEndX.value - swipeStartX.value;
-    if (difference > 50) {
+    const differenceX = swipeEndX.value - swipeStartX.value;
+    const differenceY = swipeEndY.value - swipeStartY.value;
+    if (Math.abs(differenceY) > 50) {
+        return;
+    }
+    if (differenceX > 50) {
         mobileChatTabsShown.value = true;
-    } else if (difference < -50) {
+    } else if (differenceX < -50) {
         mobileChatTabsShown.value = false;
     }
+    e.stopPropagation();
 }
 
 /*
@@ -227,3 +241,18 @@ watch(
     }
 );
 </script>
+
+<style>
+.slide-enter-active,
+.slide-leave-active {
+    transition: transform 0.3s ease;
+}
+.slide-enter-from,
+.slide-leave-to {
+    transform: translateX(-100%);
+}
+.slide-enter-to,
+.slide-leave-from {
+    transform: translateX(0);
+}
+</style>
