@@ -160,6 +160,15 @@ class ChatController extends Controller
     }
 
     /**
+     * Updates the chat with non-empty fields.
+     */
+    public function update(Request $request, Chat $chat)
+    {
+        $data = array_filter($request->only(["name", "picture", "is_private", "new_admin_user"]));
+        dd($data);
+    }
+
+    /**
      * Adds the user to this chat (by creating UserChat of this chat for him)
      */
     public function join(Chat $chat)

@@ -9,16 +9,17 @@ use App\Models\Message;
 class NotificationService
 {
     /**
-     * Sends a notification in a chat with specified message - `content`.
+     * Sends a notification in a chat with specified message.
      */
-    public function chat(Chat $chat, string $content)
+    public function chat(Chat $chat, string $message)
     {
+        // Create the Message
         $message = Message::create(
             [
                 "user_id" => null,
                 "chat_id" => $chat->id,
                 "type" => "notification",
-                "content" => $content
+                "content" => $message
             ]
         );
 

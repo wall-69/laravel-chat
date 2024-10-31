@@ -42,6 +42,8 @@ Route::controller(ChatController::class)->name("chat.")->group(function () {
         Route::post("/chat", "store")->name("store");
         Route::post("/chat/{chat}/join", "join")->name("join");
         Route::post("/chat/{chat}/leave", "leave")->name("leave");
+
+        Route::patch("/chat/{chat}", "update")->name("update");
     });
 });
 

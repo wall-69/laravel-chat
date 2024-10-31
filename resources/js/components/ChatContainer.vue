@@ -100,6 +100,59 @@
                     </li>
                 </ul>
                 <hr class="w-100" />
+                <!-- ADMIN ACTIONS -->
+                <template
+                    v-if="currentUser.id == currentChat.chat.admin.user_id"
+                >
+                    <!-- Rename -->
+                    <chat-admin-form :chat="currentChat" action-name="Rename">
+                        <input
+                            type="text"
+                            name="name"
+                            :value="currentChat.name"
+                        />
+                    </chat-admin-form>
+                    <!-- Change visibility -->
+                    <chat-admin-form
+                        :chat="currentChat"
+                        action-name="Change visibility"
+                    >
+                        <select name="is_private">
+                            <option
+                                value="0"
+                                :selected="currentChat.is_private == 0"
+                            >
+                                Public
+                            </option>
+                            <option
+                                value="1"
+                                :selected="currentChat.is_private == 1"
+                            >
+                                Private
+                            </option>
+                        </select>
+                    </chat-admin-form>
+                    <!-- Change admin -->
+                    <chat-admin-form
+                        :chat="currentChat"
+                        action-name="Change admin"
+                    >
+                        <select name="new_admin_user">
+                            <option
+                                v-for="user in currentChat.chat.users"
+                                :value="user.id"
+                                :selected="user.id == currentUser.id"
+                            >
+                                {{ user.nickname }}
+                            </option>
+                        </select>
+                    </chat-admin-form>
+                    <!-- Delete -->
+                    <chat-admin-form :chat="currentChat" action-name="Delete">
+                        <p class="mb-0 text-accent fw-bold">Are you sure?</p>
+                    </chat-admin-form>
+                    <hr class="w-100" />
+                </template>
                 <!-- LEAVE CHANNEL BUTTON -->
                 <form
                     v-if="currentChat.chat.type == 'channel'"
