@@ -17,11 +17,13 @@ namespace App\Models{
  *
  * @property int $id
  * @property string $name
+ * @property string $type
+ * @property string $picture
  * @property int $is_private
  * @property \Illuminate\Support\Carbon|null $last_message
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\ChatAdmin|null $chatAdmin
+ * @property-read \App\Models\ChatAdmin|null $admin
  * @property-read \App\Models\Message|null $lastMessage
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Message> $messages
  * @property-read int|null $messages_count
@@ -37,6 +39,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Chat whereIsPrivate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Chat whereLastMessage($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Chat whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Chat wherePicture($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Chat whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Chat whereUpdatedAt($value)
  */
 	class Chat extends \Eloquent {}
@@ -159,7 +163,6 @@ namespace App\Models{
  * @property int $user_id
  * @property int $chat_id
  * @property string $name
- * @property string $picture
  * @property \Illuminate\Support\Carbon|null $last_read
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -173,7 +176,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|UserChat whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserChat whereLastRead($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserChat whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserChat wherePicture($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserChat whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserChat whereUserId($value)
  */

@@ -11,9 +11,12 @@
             height="35"
             class="bg-white rounded-circle align-self-start"
         />
-        <p class="m-0 text-white">
-            {{ message }}
-        </p>
+        <div class="d-flex flex-column">
+            <span class="lh-1 fs-6">{{ user.nickname }} </span>
+            <p class="m-0 text-white text-break">
+                {{ message }}
+            </p>
+        </div>
     </div>
 </template>
 
