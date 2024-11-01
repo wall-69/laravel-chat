@@ -6,6 +6,7 @@ use App\Models\Chat;
 use App\Models\ChatAdmin;
 use App\Models\User;
 use App\Models\UserChat;
+use App\Models\UserChatBan;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
@@ -29,7 +30,8 @@ class ChatController extends Controller
                 "chat",
                 "chat.admin.user:id,nickname",
                 "chat.lastMessage.user:id,nickname",
-                "chat.users:id,nickname,profile_picture"
+                "chat.users:id,nickname,profile_picture",
+                "chat.bans.user:id,nickname,profile_picture"
             ])
             ->get()
             ->sortByDesc(function ($userChat) {
@@ -175,6 +177,8 @@ class ChatController extends Controller
     {
         if (UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chat->id)->exists()) {
             abort(400, "You are already in this chat.");
+        } else if (UserChatBan::where("user_id", auth()->user()->id)->where("chat_id", $chat->id)->exists()) {
+            abort(400, "You are banned from this channel!");
         }
 
         UserChat::create([
@@ -209,5 +213,26 @@ class ChatController extends Controller
         }
 
         return redirect(route("chat.index"));
+    }
+
+    /**
+     * Removes the user from this chat (by deleting his UserChat of this chat for him)
+     */
+    public function kick(Request $request, Chat $chat)
+    {
+        $request->validate([
+            "user_id" => "required|exists:users,id"
+        ]);
+
+        // Get the User
+        $user = User::find($request->user_id);
+
+        // Get the UserChat or abort, then delete it
+        $userChat = UserChat::where("user_id", $user->id)->where("chat_id", $chat->id)->firstOrFail();
+        $userChat->delete();
+
+        $this->notificationService->chat($chat, $user->nickname . " has been kicked.");
+
+        return response()->json(["message" => "User was successfully kicked."]);
     }
 }

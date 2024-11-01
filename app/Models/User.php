@@ -62,4 +62,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserBlock::class);
     }
+
+    public function userChatBans()
+    {
+        return $this->hasMany(UserChatBan::class);
+    }
 }

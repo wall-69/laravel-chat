@@ -42,6 +42,11 @@ class Chat extends Model
         return $this->belongsToMany(User::class, "user_chats");
     }
 
+    public function bans()
+    {
+        return $this->hasMany(UserChatBan::class);
+    }
+
     public function isDM()
     {
         return $this->type == "dm";

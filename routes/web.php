@@ -4,6 +4,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\UserBlockController;
+use App\Http\Controllers\UserChatBanController;
 use App\Http\Controllers\UserChatController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -43,6 +44,8 @@ Route::controller(ChatController::class)->name("chat.")->group(function () {
         Route::post("/chat/{chat}/join", "join")->name("join");
         Route::post("/chat/{chat}/leave", "leave")->name("leave");
 
+        Route::post("/chat/{chat}/kick", "kick")->name("kick");
+
         Route::patch("/chat/{chat}", "update")->name("update");
     });
 });
@@ -56,6 +59,13 @@ Route::controller(UserChatController::class)->name("userChats.")->middleware("au
 Route::controller(UserBlockController::class)->name("userBlocks.")->middleware("auth")->group(function () {
     Route::post("/user-block", "store")->name("store");
     Route::delete("/user-block/{userBlock}", "destroy")->name("destroy");
+});
+
+// UserChatBan
+// TODO: API?????
+Route::controller(UserChatBanController::class)->name("userChatBans.")->middleware("auth")->group(function () {
+    Route::post("/user-chat-ban/", "store")->name("store");
+    Route::delete("/user-chat-ban/{userChatBan}", "destroy")->name("destroy");
 });
 
 // Message

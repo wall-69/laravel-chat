@@ -61,7 +61,7 @@
                 <span class="text-center fw-bold">{{ currentChat.name }}</span>
                 <hr class="w-100" />
                 <!-- USERS LIST -->
-                <p>Users ({{ currentChat.chat.users.length }}):</p>
+                <h6>Users ({{ currentChat.chat.users.length }}):</h6>
                 <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
                     <li
                         v-for="user in currentChat.chat.users"
@@ -94,13 +94,23 @@
                                 user.id != currentUser.id
                             "
                         >
-                            <button class="btn btn-warning p-1">Kick</button>
-                            <button class="btn btn-danger p-1">Ban</button>
+                            <button
+                                @click="handleKick(user.id)"
+                                class="btn btn-warning p-1"
+                            >
+                                Kick
+                            </button>
+                            <button
+                                @click="handleBan(user.id)"
+                                class="btn btn-danger p-1"
+                            >
+                                Ban
+                            </button>
                         </template>
                     </li>
                 </ul>
                 <hr class="w-100" />
-                <!-- ADMIN ACTIONS -->
+                <!-- ADMIN ACTIONS & BANNED USERS -->
                 <template
                     v-if="
                         currentChat.chat.type == 'channel' &&
@@ -155,6 +165,45 @@
                         <p class="mb-0 text-accent fw-bold">Are you sure?</p>
                     </chat-admin-form>
                     <hr class="w-100" />
+                    <!-- Banned users -->
+                    <template v-if="currentChat.chat.bans.length > 0">
+                        <h6>
+                            Banned users ({{ currentChat.chat.bans.length }}):
+                        </h6>
+                        <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
+                            <li
+                                v-for="ban in currentChat.chat.bans"
+                                class="d-flex align-items-center gap-2"
+                            >
+                                <!-- USER PROFILE PICTURE -->
+                                <img
+                                    :src="asset(ban.user.profile_picture)"
+                                    :alt="
+                                        ban.user.nickname + ' profile picture'
+                                    "
+                                    class="rounded-circle"
+                                    height="45"
+                                    width="45"
+                                />
+                                <!-- USER NICKNAME -->
+                                <a
+                                    :href="
+                                        route('users.show', ban.user.nickname)
+                                    "
+                                >
+                                    {{ ban.user.nickname }}
+                                </a>
+                                <!-- UNBAN BUTTON -->
+                                <button
+                                    @click="handleUnban(ban.id)"
+                                    class="btn btn-warning p-1"
+                                >
+                                    Unban
+                                </button>
+                            </li>
+                        </ul>
+                        <hr class="w-100" />
+                    </template>
                 </template>
                 <!-- LEAVE CHANNEL BUTTON -->
                 <form
@@ -479,6 +528,63 @@ async function prepareChat() {
     nextTick(() => {
         scrollToBottom();
     });
+}
+
+// Admin actions
+async function handleKick(userId) {
+    try {
+        const formData = new FormData();
+        formData.append("user_id", userId);
+
+        const res = await axios.post(
+            route("chat.kick", { chat: currentChat.value.id }),
+            formData,
+            {
+                ContentType: "multipart/form-data",
+            }
+        );
+    } catch (error) {
+        console.error("User chat kick request error: " + error);
+    } finally {
+        // Remove the user from the users list
+        currentChat.value.chat.users = currentChat.value.chat.users.filter(
+            (user) => user.id != userId
+        );
+    }
+}
+
+async function handleBan(userId) {
+    try {
+        const formData = new FormData();
+        formData.append("user_id", userId);
+        formData.append("chat_id", currentChat.value.id);
+
+        const res = await axios.post(route("userChatBans.store"), formData, {
+            ContentType: "multipart/form-data",
+        });
+    } catch (error) {
+        console.error("User chat ban request error: " + error);
+    } finally {
+        // Remove the user from the users list
+        currentChat.value.chat.users = currentChat.value.chat.users.filter(
+            (user) => user.id != userId
+        );
+    }
+}
+
+async function handleUnban(banId) {
+    try {
+        const res = await axios.delete(
+            route("userChatBans.destroy", { userChatBan: banId })
+        );
+    } catch (error) {
+        console.error("User chat ban request error: " + error);
+    } finally {
+        // Remove the user from the users list
+        currentChat.value.chat.bans = currentChat.value.chat.bans.filter(
+            (ban) => ban.id != banId
+        );
+    }
 }
 
 /*
