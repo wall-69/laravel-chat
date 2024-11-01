@@ -33,104 +33,24 @@
 
                         @if ($isMyProfile)
                             {{-- Settings --}}
-                            <form class="px-5 py-4 bg-secondary rounded-4 d-flex flex-column gap-2"
-                                enctype="multipart/form-data">
-                                <h3
-                                    class="text-center text-white fw-normal border-bottom border-divider pb-1 border-opacity-25">
-                                    Settings
-                                </h3>
-
-                                {{-- Nickname --}}
-                                <label for="nickname" class="text-start text-white fw-bold">nickname:</label>
-                                <input type="nickname" name="nickname" class="py-2 px-1" value="{{ old('nickname') }}">
-                                @error('nickname')
-                                    <p class="text-warning fw-bold text-start">{{ $message }}</p>
-                                @enderror
-
-                                {{-- Profile picture --}}
-                                <label for="profile_picture" class="text-start text-white fw-bold">profile picture:</label>
-                                <input type="file" name="profile_picture" class="py-2 px-1 text-white"
-                                    value="{{ old('profile_picture') }}">
-                                @error('profile_picture')
-                                    <p class="text-warning fw-bold text-start">{{ $message }}</p>
-                                @enderror
-
-                                <div class="mx-auto">
-                                    <button type="submit"
-                                        class="btn btn-accent rounded-0 text-white fw-bold fs-5 px-4 py-1 shadow">
-                                        Save
-                                    </button>
-                                </div>
-                            </form>
+                            <x-change-settings-form></x-change-settings-form>
                         @endif
                     </div>
                     <div class="d-flex flex-column gap-5">
                         @if ($isMyProfile)
                             {{-- Column 2 --}}
                             {{-- Change email --}}
-                            <form class="px-5 py-4 bg-secondary rounded-4 d-flex flex-column gap-2">
-                                <h3
-                                    class="text-center text-white fw-normal border-bottom border-divider pb-1 border-opacity-25">
-                                    Change email
-                                </h3>
-
-                                {{-- New email --}}
-                                <label for="email" class="text-start text-white fw-bold">new email:</label>
-                                <input type="email" name="email" class="py-2 px-1" value="{{ old('email') }}">
-                                @error('email')
-                                    <p class="text-warning fw-bold text-start">{{ $message }}</p>
-                                @enderror
-
-                                {{-- Password --}}
-                                <label for="password" class="text-start text-white fw-bold">password:</label>
-                                <input type="password" name="password" class="py-2 px-1" value="{{ old('password') }}">
-                                @error('password')
-                                    <p class="text-warning fw-bold text-start">{{ $message }}</p>
-                                @enderror
-
-                                <div class="mx-auto">
-                                    <button type="submit"
-                                        class="btn btn-accent rounded-0 text-white fw-bold fs-5 px-4 py-1 shadow">
-                                        Change
-                                    </button>
-                                </div>
-                            </form>
+                            <x-change-email-form></x-change-email-form>
 
                             {{-- Change password --}}
-                            <form class="px-5 py-4 bg-secondary rounded-4 d-flex flex-column gap-2">
-                                <h3
-                                    class="text-center text-white fw-normal border-bottom border-divider pb-1 border-opacity-25">
-                                    Change password
-                                </h3>
-
-                                {{-- New password --}}
-                                <label for="new_password" class="text-start text-white fw-bold">new password:</label>
-                                <input type="password" name="new_password" class="py-2 px-1" value="{{ old('new_password') }}">
-                                @error('new_password')
-                                    <p class="text-warning fw-bold text-start">{{ $message }}</p>
-                                @enderror
-
-                                {{-- Password --}}
-                                <label for="password" class="text-start text-white fw-bold">current password:</label>
-                                <input type="password" name="password" class="py-2 px-1" value="{{ old('password') }}">
-                                @error('password')
-                                    <p class="text-warning fw-bold text-start">{{ $message }}</p>
-                                @enderror
-
-                                <div class="mx-auto">
-                                    <button type="submit"
-                                        class="btn btn-accent rounded-0 text-white fw-bold fs-5 px-4 py-1 shadow">
-                                        Change
-                                    </button>
-                                </div>
-                            </form>
+                            <x-change-password-form></x-change-password-form>
                         @else
                             <div class="px-3 py-2 bg-secondary rounded-4 shadow d-flex flex-column gap-2">
                                 {{--
-                        Show Start chat button to:
-                        - guest users
-                        - users that dont have a UserChat with this user AND none of these 2 users block each other
-                    --}}
+                                    Show Start chat button to:
+                                    - guest users
+                                    - users that dont have a UserChat with this user AND none of these 2 users block each other
+                                --}}
                                 @if (
                                     !auth()->check() ||
                                         (auth()->user()->userChats->doesntContain('name', $user->nickname) &&
