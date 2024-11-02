@@ -132,7 +132,11 @@
                     "
                 >
                     <!-- Rename -->
-                    <chat-admin-form :chat="currentChat" action-name="Rename">
+                    <chat-admin-form
+                        :chat="currentChat"
+                        action-name="Rename"
+                        method="PATCH"
+                    >
                         <input
                             type="text"
                             name="name"
@@ -143,6 +147,7 @@
                     <chat-admin-form
                         :chat="currentChat"
                         action-name="Change visibility"
+                        method="PATCH"
                     >
                         <select name="is_private">
                             <option
@@ -163,6 +168,7 @@
                     <chat-admin-form
                         :chat="currentChat"
                         action-name="Change admin"
+                        method="PATCH"
                     >
                         <select name="new_admin_user">
                             <option
@@ -175,7 +181,14 @@
                         </select>
                     </chat-admin-form>
                     <!-- Delete -->
-                    <chat-admin-form :chat="currentChat" action-name="Delete">
+                    <chat-admin-form
+                        :chat="currentChat"
+                        action-name="Delete"
+                        :action-url="
+                            route('chat.destroy', { chat: currentChat.chat.id })
+                        "
+                        method="DELETE"
+                    >
                         <p class="mb-0 text-accent fw-bold">Are you sure?</p>
                     </chat-admin-form>
                     <hr class="w-100" />

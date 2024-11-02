@@ -46,7 +46,9 @@ Route::controller(ChatController::class)->name("chat.")->group(function () {
 
         Route::post("/chat/{chat}/kick", "kick")->name("kick");
 
+        // Should be API???
         Route::patch("/chat/{chat}", "update")->name("update");
+        Route::delete("/chat/{chat}", "destroy")->name("destroy");
     });
 });
 

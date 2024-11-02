@@ -177,6 +177,15 @@ class ChatController extends Controller
     }
 
     /**
+     * Deletes the chat.
+     */
+    public function destroy(Chat $chat)
+    {
+        $chat->delete();
+        return response()->json(["message" => "Chat was successfully deleted."]);
+    }
+
+    /**
      * Adds the user to this chat (by creating UserChat of this chat for him)
      */
     public function join(Chat $chat)

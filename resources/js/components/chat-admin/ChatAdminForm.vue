@@ -15,7 +15,12 @@
             :action="route('chat.update', { chat: chat.id })"
             class="d-flex align-items-center flex-wrap gap-1"
         >
-            <input type="hidden" name="_method" value="PATCH" />
+            <input
+                v-if="method != 'POST'"
+                type="hidden"
+                name="_method"
+                :value="method"
+            />
 
             <slot></slot>
             <button type="submit" class="btn btn-primary p-1">Submit</button>
@@ -36,6 +41,13 @@ import { reactive, ref } from "vue";
 const props = defineProps({
     chat: Object,
     actionName: String,
+    actionUrl: {
+        type: String,
+        default: (props) => route("chat.update", { chat: props.chat.id }),
+    },
+    method: {
+        type: String,
+    },
 });
 
 /*
@@ -62,13 +74,9 @@ async function handleFormSubmit() {
             }
         }
 
-        const res = await axios.post(
-            route("chat.update", { chat: props.chat.id }),
-            formData,
-            {
-                ContentType: "multipart/form-data",
-            }
-        );
+        const res = await axios.post(props.actionUrl, formData, {
+            ContentType: "multipart/form-data",
+        });
     } catch (error) {
         console.error("Chat update request error: " + error);
     }
