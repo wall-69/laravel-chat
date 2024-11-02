@@ -29,7 +29,13 @@
         <div class="d-flex flex-column min-w-0 placeholder-glow">
             <!-- Profile Name -->
             <p class="m-0 text-white fw-bold">
-                {{ userChat.name }}
+                {{
+                    userChat.chat.type == "dm"
+                        ? userChat.chat.users[0].id == currentUser.id
+                            ? userChat.chat.users[1].nickname
+                            : userChat.chat.users[0].nickname
+                        : userChat.chat.name
+                }}
             </p>
             <!-- Last message -->
             <p class="m-0 text-white fw-light small text-truncate">

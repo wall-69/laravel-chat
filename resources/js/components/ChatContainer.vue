@@ -35,7 +35,13 @@
                         :href="'/profile/' + currentChat.name"
                         class="m-0 text-white fw-bold"
                     >
-                        {{ currentChat.name }}
+                        {{
+                            currentChat.chat.type == "dm"
+                                ? currentChat.chat.users[0].id == currentUser.id
+                                    ? currentChat.chat.users[1].nickname
+                                    : currentChat.chat.users[0].nickname
+                                : currentChat.chat.name
+                        }}
                     </component>
                 </div>
 
@@ -58,7 +64,15 @@
                 }"
             >
                 <!-- CHAT NAME -->
-                <span class="text-center fw-bold">{{ currentChat.name }}</span>
+                <span class="text-center fw-bold">
+                    {{
+                        currentChat.chat.type == "dm"
+                            ? currentChat.chat.users[0].id == currentUser.id
+                                ? currentChat.chat.users[1].nickname
+                                : currentChat.chat.users[0].nickname
+                            : currentChat.chat.name
+                    }}
+                </span>
                 <hr class="w-100" />
                 <!-- USERS LIST -->
                 <h6>Users ({{ currentChat.chat.users.length }}):</h6>
@@ -122,7 +136,7 @@
                         <input
                             type="text"
                             name="name"
-                            :value="currentChat.name"
+                            :value="currentChat.chat.name"
                         />
                     </chat-admin-form>
                     <!-- Change visibility -->
@@ -133,13 +147,13 @@
                         <select name="is_private">
                             <option
                                 value="0"
-                                :selected="currentChat.is_private == 0"
+                                :selected="currentChat.chat.is_private == 0"
                             >
                                 Public
                             </option>
                             <option
                                 value="1"
-                                :selected="currentChat.is_private == 1"
+                                :selected="currentChat.chat.is_private == 1"
                             >
                                 Private
                             </option>

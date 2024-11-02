@@ -95,13 +95,13 @@ provide("currentChat", currentChat);
  */
 async function joinPrivateChannel(channelName) {
     // Listens in private chat channel for MessageSent event
-    Echo.private(channelName).listen("MessageSent", async (e) => {
+    Echo.private(channelName).listen("MessageSent", async (event) => {
         // Emit to the child components message sent event with the message
-        emitter.emit("messageSent", e.message);
+        emitter.emit("messageSent", event.message);
 
         // Find the index of the chat in which the message was sent
         const chatIndex = chatOrder.value.findIndex(
-            (userChat) => userChat.chat_id === e.message.chat_id
+            (userChat) => userChat.chat_id === event.message.chat_id
         );
 
         // Check, if the chat was found in the chatOrder array
@@ -112,10 +112,10 @@ async function joinPrivateChannel(channelName) {
             // Update the last message of the chat
             const lastMessage = chatOrder.value[chatIndex].chat.last_message;
             if (lastMessage !== null) {
-                lastMessage.created_at = e.message.created_at;
+                lastMessage.created_at = event.message.created_at;
             } else {
                 // If there is no last message set it to the message that was just sent
-                chatOrder.value[chatIndex].chat.last_message = e.message;
+                chatOrder.value[chatIndex].chat.last_message = event.message;
             }
 
             // Re-sort the chats
@@ -134,7 +134,7 @@ async function joinPrivateChannel(channelName) {
             window.scrollTo(window.scrollX, scrollPosition);
         }
 
-        if (e.message.user_id != props.currentUser.id) {
+        if (event.message.user_id != props.currentUser.id) {
             // Play notification sound, if the message was not sent by the user
             let audio = new Audio(asset("audio/notification.mp3"));
             audio.play();
@@ -208,9 +208,9 @@ function handleTouchStart(event) {
 /**
  * Function for handling the end of a touch on the screen. This saves the `swipeEndX` to the screenX position of where the touch ended. Then, if the touch was from left to right, the `mobileChatTabsShown` will be set to true and if it was from right to left it will be set to false.
  */
-function handleTouchEnd(e) {
-    swipeEndX.value = e.changedTouches[0].screenX;
-    swipeEndY.value = e.changedTouches[0].screenY;
+function handleTouchEnd(event) {
+    swipeEndX.value = event.changedTouches[0].screenX;
+    swipeEndY.value = event.changedTouches[0].screenY;
 
     const differenceX = swipeEndX.value - swipeStartX.value;
     const differenceY = swipeEndY.value - swipeStartY.value;
@@ -222,7 +222,8 @@ function handleTouchEnd(e) {
     } else if (differenceX < -50) {
         mobileChatTabsShown.value = false;
     }
-    e.stopPropagation();
+
+    event.stopPropagation();
 }
 
 /*

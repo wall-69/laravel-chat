@@ -166,8 +166,14 @@ class ChatController extends Controller
      */
     public function update(Request $request, Chat $chat)
     {
-        $data = array_filter($request->only(["name", "picture", "is_private", "new_admin_user"]));
-        dd($data);
+        $data = $request->only(["name", "picture", "is_private"]);
+        if ($request->new_admin_user) {
+            dd("new admin ::D::SD:D");
+        }
+
+        $chat->update($data);
+
+        return response()->json(["message" => "Chat updated successfully."]);
     }
 
     /**

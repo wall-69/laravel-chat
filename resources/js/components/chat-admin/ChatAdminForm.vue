@@ -9,15 +9,12 @@
         </button>
         <form
             v-else
+            ref="form"
+            @submit="handleFormSubmit"
             method="POST"
-            :action="route('chat.update', chat.id)"
+            :action="route('chat.update', { chat: chat.id })"
             class="d-flex align-items-center flex-wrap gap-1"
         >
-            <input
-                type="hidden"
-                name="_token"
-                :value="axios.defaults.headers.common['X-CSRF-TOKEN']"
-            />
             <input type="hidden" name="_method" value="PATCH" />
 
             <slot></slot>
@@ -31,7 +28,7 @@
 
 <script setup>
 import axios from "axios";
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 
 /*
  *  PROPS
@@ -45,9 +42,35 @@ const props = defineProps({
  *  COMPONENT
  */
 
+const form = ref(null);
 const formShown = ref(false);
 
 function toggleFormShown() {
     formShown.value = !formShown.value;
+}
+
+async function handleFormSubmit() {
+    formShown.value = false;
+
+    try {
+        const formData = new FormData();
+        // Get all elements inside the form, if the element has a name attribute (thus is a input), we add it to the FormData with its name & value
+        for (let i = 0; i < form.value.length; i++) {
+            let el = form.value[i];
+            if (el.name) {
+                formData.append(el.name, el.value);
+            }
+        }
+
+        const res = await axios.post(
+            route("chat.update", { chat: props.chat.id }),
+            formData,
+            {
+                ContentType: "multipart/form-data",
+            }
+        );
+    } catch (error) {
+        console.error("Chat update request error: " + error);
+    }
 }
 </script>
