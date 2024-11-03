@@ -45,9 +45,7 @@ const props = defineProps({
         type: String,
         default: (props) => route("chat.update", { chat: props.chat.id }),
     },
-    method: {
-        type: String,
-    },
+    method: String,
 });
 
 /*

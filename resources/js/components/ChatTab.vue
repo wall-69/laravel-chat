@@ -19,7 +19,15 @@
                       )
                     : asset(userChat.chat.picture)
             "
-            :alt="userChat.name + ' profile picture'"
+            :alt="
+                (userChat.chat.type == 'dm'
+                    ? asset(
+                          userChat.chat.users[0].id == currentUser.id
+                              ? userChat.chat.users[1].nickname
+                              : userChat.chat.users[0].nickname
+                      )
+                    : asset(userChat.chat.name)) + ' profile picture'
+            "
             class="bg-white rounded-circle"
             width="65"
             height="65"

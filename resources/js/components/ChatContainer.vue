@@ -24,7 +24,13 @@
                                   )
                                 : asset(currentChat.chat.picture)
                         "
-                        :alt="currentChat.name + ' profile picture'"
+                        :alt="
+                            (currentChat.chat.type == 'dm'
+                                ? currentChat.chat.users[0].id == currentUser.id
+                                    ? currentChat.chat.users[1].nickname
+                                    : currentChat.chat.users[0].nickname
+                                : currentChat.chat.name) + ' profile picture'
+                        "
                         class="bg-white rounded-circle"
                         height="45"
                         width="45"
@@ -32,7 +38,14 @@
                     <!-- Chat name -->
                     <component
                         :is="currentChat.chat.type == 'dm' ? 'a' : 'p'"
-                        :href="'/profile/' + currentChat.name"
+                        :href="
+                            '/profile/' +
+                            (currentChat.chat.type == 'dm'
+                                ? currentChat.chat.users[0].id == currentUser.id
+                                    ? currentChat.chat.users[1].nickname
+                                    : currentChat.chat.users[0].nickname
+                                : currentChat.chat.name)
+                        "
                         class="m-0 text-white fw-bold"
                     >
                         {{

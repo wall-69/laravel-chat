@@ -41,9 +41,9 @@ Route::controller(ChatController::class)->name("chat.")->group(function () {
         Route::get("/channels", "channels")->name("channels");
 
         Route::post("/chat", "store")->name("store");
+        // api perhaps?
         Route::post("/chat/{chat}/join", "join")->name("join");
         Route::post("/chat/{chat}/leave", "leave")->name("leave");
-
         Route::post("/chat/{chat}/kick", "kick")->name("kick");
 
         // Should be API???
