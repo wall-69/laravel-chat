@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChatAdminController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MessageController;
@@ -50,6 +51,12 @@ Route::controller(ChatController::class)->name("chat.")->group(function () {
         Route::patch("/chat/{chat}", "update")->name("update");
         Route::delete("/chat/{chat}", "destroy")->name("destroy");
     });
+});
+
+// ChatAdmin
+// SHOULD BE API???
+Route::controller(ChatAdminController::class)->name("chatAdmins.")->middleware("auth")->group(function () {
+    Route::post("/chat/{chat}/change-admin", "changeAdmin")->name("changeAdmin");
 });
 
 // UserChat

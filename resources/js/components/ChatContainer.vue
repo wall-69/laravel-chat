@@ -181,9 +181,14 @@
                     <chat-admin-form
                         :chat="currentChat"
                         action-name="Change admin"
-                        method="PATCH"
+                        :action-url="
+                            route('chatAdmins.changeAdmin', {
+                                chat: currentChat.chat.id,
+                            })
+                        "
+                        method="POST"
                     >
-                        <select name="new_admin_user">
+                        <select name="new_user_id">
                             <option
                                 v-for="user in currentChat.chat.users"
                                 :value="user.id"
@@ -577,7 +582,7 @@ async function handleKick(userId) {
         formData.append("user_id", userId);
 
         const res = await axios.post(
-            route("chat.kick", { chat: currentChat.value.id }),
+            route("chat.kick", { chat: currentChat.value.chat.id }),
             formData,
             {
                 ContentType: "multipart/form-data",
@@ -597,7 +602,7 @@ async function handleBan(userId) {
     try {
         const formData = new FormData();
         formData.append("user_id", userId);
-        formData.append("chat_id", currentChat.value.id);
+        formData.append("chat_id", currentChat.value.chat.id);
 
         const res = await axios.post(route("userChatBans.store"), formData, {
             ContentType: "multipart/form-data",
