@@ -56,4 +56,11 @@ class Chat extends Model
     {
         return $this->type == "channel";
     }
+
+    public function scopeNameFilter($query, ?string $name)
+    {
+        if ($name) {
+            $query->where("name", "like", "%$name%");
+        }
+    }
 }

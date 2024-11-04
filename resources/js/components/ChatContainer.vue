@@ -146,7 +146,7 @@
                 >
                     <!-- Rename -->
                     <chat-admin-form
-                        :chat="currentChat"
+                        :chat="currentChat.chat"
                         action-name="Rename"
                         method="PATCH"
                     >
@@ -158,7 +158,7 @@
                     </chat-admin-form>
                     <!-- Change visibility -->
                     <chat-admin-form
-                        :chat="currentChat"
+                        :chat="currentChat.chat"
                         action-name="Change visibility"
                         method="PATCH"
                     >
@@ -179,7 +179,7 @@
                     </chat-admin-form>
                     <!-- Change admin -->
                     <chat-admin-form
-                        :chat="currentChat"
+                        :chat="currentChat.chat"
                         action-name="Change admin"
                         :action-url="
                             route('chatAdmins.changeAdmin', {
@@ -200,7 +200,7 @@
                     </chat-admin-form>
                     <!-- Delete -->
                     <chat-admin-form
-                        :chat="currentChat"
+                        :chat="currentChat.chat"
                         action-name="Delete"
                         :action-url="
                             route('chat.destroy', { chat: currentChat.chat.id })
