@@ -17,7 +17,7 @@ class UserChatController extends Controller
         $userChat->update(["last_read" => now()->toISOString()]);
 
         return response()->json([
-            "message" => "Last read updated successfully!"
+            "message" => "Last read was updated successfully!"
         ]);
     }
 }

@@ -166,14 +166,25 @@ class ChatController extends Controller
      */
     public function update(Request $request, Chat $chat)
     {
-        $data = $request->only(["name", "picture", "is_private"]);
-        if ($request->new_admin_user) {
-            dd("new admin ::D::SD:D");
+        $data = [];
+
+        if ($request->filled("name") && $chat->name !== $request->name) {
+            $data["name"] = $request->name;
+            $this->notificationService->chat($chat, "The channel name was set to " . $request->name . ".");
+        } else if ($request->has("is_private") && $chat->is_private !== $request->is_private) {
+            $data["is_private"] = $request->is_private;
+
+            $visibility = $request->is_private ? "Private" : "Public";
+            $this->notificationService->chat($chat, "The channel visibility was set to " . $visibility . ".");
         }
 
-        $chat->update($data);
+        // Update the Chat, if there is new data set
+        if (!empty($data)) {
+            $chat->update($data);
+            return response()->json(["message" => "Chat was updated successfully."]);
+        }
 
-        return response()->json(["message" => "Chat updated successfully."]);
+        return response()->json(["message" => "Chat wanst updated because no new data was provided."]);
     }
 
     /**

@@ -78,7 +78,7 @@ class MessageController extends Controller
             $chat->update(["last_message" => now()->toISOString()]);
 
             return response()->json([
-                "message" => "Message successfully stored.",
+                "message" => "Message was successfully stored.",
             ]);
         } else {
             abort(400, "The user is not in this chat.");

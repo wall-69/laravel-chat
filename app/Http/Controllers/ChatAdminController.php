@@ -41,6 +41,6 @@ class ChatAdminController extends Controller
         // Send notification to the Chat
         $this->notificationService->chat($chat, User::find($request->new_user_id)->nickname . " is now the admin of this channel.");
 
-        return response()->json(["message" => "New admin set successfully."]);
+        return response()->json(["message" => "New admin was set successfully."]);
     }
 }
