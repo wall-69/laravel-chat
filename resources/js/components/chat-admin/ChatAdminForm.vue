@@ -13,6 +13,7 @@
             @submit="handleFormSubmit"
             method="POST"
             :action="route('chat.update', { chat: chat.id })"
+            :enctype="enctype"
             class="d-flex align-items-center flex-wrap gap-1"
         >
             <input
@@ -46,6 +47,7 @@ const props = defineProps({
         default: (props) => route("chat.update", { chat: props.chat.id }),
     },
     method: String,
+    enctype: String,
 });
 
 /*
@@ -67,13 +69,22 @@ async function handleFormSubmit() {
         // Get all elements inside the form, if the element has a name attribute (thus is a input), we add it to the FormData with its name & value
         for (let i = 0; i < form.value.length; i++) {
             let el = form.value[i];
-            if (el.name) {
+            if (!el.name) {
+                continue;
+            }
+            if (el.type === "file") {
+                for (let file of el.files) {
+                    formData.append(el.name, file);
+                }
+            } else {
                 formData.append(el.name, el.value);
             }
         }
 
         const res = await axios.post(props.actionUrl, formData, {
-            ContentType: "multipart/form-data",
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
         });
     } catch (error) {
         console.error("Chat update request error: " + error);

@@ -177,6 +177,19 @@
                             </option>
                         </select>
                     </chat-admin-form>
+                    <!-- Change picture -->
+                    <chat-admin-form
+                        :chat="currentChat.chat"
+                        action-name="Change picture"
+                        method="PATCH"
+                        enctype="multipart/form-data"
+                    >
+                        <input
+                            type="file"
+                            name="chat_picture"
+                            accept="image/*"
+                        />
+                    </chat-admin-form>
                     <!-- Change admin -->
                     <chat-admin-form
                         :chat="currentChat.chat"
@@ -226,7 +239,7 @@
                                     :alt="
                                         ban.user.nickname + ' profile picture'
                                     "
-                                    class="rounded-circle"
+                                    class="rounded-circle ratio-1"
                                     height="45"
                                     width="45"
                                 />

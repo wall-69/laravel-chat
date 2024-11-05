@@ -169,13 +169,30 @@ class ChatController extends Controller
         $data = [];
 
         if ($request->filled("name") && $chat->name !== $request->name) {
+            // Validate
+            $request->validate(["name" => "min:3"]);
+
             $data["name"] = $request->name;
             $this->notificationService->chat($chat, "The channel name was set to " . $request->name . ".");
-        } else if ($request->has("is_private") && $chat->is_private !== $request->is_private) {
+        } else if ($request->has("is_private") && $chat->is_private != $request->is_private) {
+            // Validate
+            $request->validate(["is_private" => "bool"]);
+
             $data["is_private"] = $request->is_private;
 
             $visibility = $request->is_private ? "Private" : "Public";
             $this->notificationService->chat($chat, "The channel visibility was set to " . $visibility . ".");
+        } else if ($request->hasFile("chat_picture")) {
+            // Validate the data
+            $request->validate(["chat_picture" => "image"]);
+
+            // Store the image
+            $filePath = $request->chat_picture->store("img/chat_pictures", "public");
+            $chat_picture = "storage/" . $filePath;
+
+            $data["picture"] = $chat_picture;
+
+            $this->notificationService->chat($chat, "New channel picture was set.");
         }
 
         // Update the Chat, if there is new data set

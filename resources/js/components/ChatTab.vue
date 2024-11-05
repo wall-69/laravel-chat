@@ -28,7 +28,7 @@
                       )
                     : asset(userChat.chat.name)) + ' profile picture'
             "
-            class="bg-white rounded-circle"
+            class="bg-white rounded-circle ratio-1"
             width="65"
             height="65"
             draggable="false"
