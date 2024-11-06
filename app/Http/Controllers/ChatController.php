@@ -166,6 +166,11 @@ class ChatController extends Controller
      */
     public function update(Request $request, Chat $chat)
     {
+        // Check, if chat is not channel
+        if (!$chat->isChannel()) {
+            abort(400, "Only channels can be updated.");
+        }
+
         $data = [];
 
         if ($request->filled("name") && $chat->name !== $request->name) {
