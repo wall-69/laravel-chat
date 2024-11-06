@@ -95,51 +95,68 @@ provide("currentChat", currentChat);
  */
 async function joinPrivateChannel(channelName) {
     // Listens in private chat channel for MessageSent event
-    Echo.private(channelName).listen("MessageSent", async (event) => {
-        // Emit to the child components message sent event with the message
-        emitter.emit("messageSent", event.message);
+    Echo.private(channelName)
+        // MessageSent
+        .listen("MessageSent", async (event) => {
+            // Emit to the child components message sent event with the message
+            emitter.emit("messageSent", event.message);
 
-        // Find the index of the chat in which the message was sent
-        const chatIndex = chatOrder.value.findIndex(
-            (userChat) => userChat.chat_id === event.message.chat_id
-        );
+            // Find the index of the chat in which the message was sent
+            const chatIndex = chatOrder.value.findIndex(
+                (userChat) => userChat.chat_id === event.message.chat_id
+            );
 
-        // Check, if the chat was found in the chatOrder array
-        if (chatIndex !== -1 && chatOrder.value.length > 1) {
-            // Save the current Y scroll position, because after sorting the chat tabs, the scrollbar jumps automatically
-            const scrollPosition = window.scrollY;
+            // Check, if the chat was found in the chatOrder array
+            if (chatIndex !== -1 && chatOrder.value.length > 1) {
+                // Save the current Y scroll position, because after sorting the chat tabs, the scrollbar jumps automatically
+                const scrollPosition = window.scrollY;
 
-            // Update the last message of the chat
-            const lastMessage = chatOrder.value[chatIndex].chat.last_message;
-            if (lastMessage !== null) {
-                lastMessage.created_at = event.message.created_at;
-            } else {
-                // If there is no last message set it to the message that was just sent
-                chatOrder.value[chatIndex].chat.last_message = event.message;
+                // Update the last message of the chat
+                const lastMessage =
+                    chatOrder.value[chatIndex].chat.last_message;
+                if (lastMessage !== null) {
+                    lastMessage.created_at = event.message.created_at;
+                } else {
+                    // If there is no last message set it to the message that was just sent
+                    chatOrder.value[chatIndex].chat.last_message =
+                        event.message;
+                }
+
+                // Re-sort the chats
+                chatOrder.value.sort((a, b) => {
+                    const dateA = a.chat.last_message
+                        ? new Date(a.chat.last_message.created_at)
+                        : 0;
+                    const dateB = b.chat.last_message
+                        ? new Date(b.chat.last_message.created_at)
+                        : 0;
+
+                    return dateA === dateB ? 1 : dateB - dateA;
+                });
+
+                // Scroll to the scroll position the user actually had
+                window.scrollTo(window.scrollX, scrollPosition);
             }
 
-            // Re-sort the chats
-            chatOrder.value.sort((a, b) => {
-                const dateA = a.chat.last_message
-                    ? new Date(a.chat.last_message.created_at)
-                    : 0;
-                const dateB = b.chat.last_message
-                    ? new Date(b.chat.last_message.created_at)
-                    : 0;
+            if (event.message.user_id != props.currentUser.id) {
+                // Play notification sound, if the message was not sent by the user
+                let audio = new Audio(asset("audio/notification.mp3"));
+                audio.play();
+            }
+        })
+        // ChatAdminChange
+        .listen("ChatAdminChange", (event) => {
+            // Find the index of the chat in which the admin was changed
+            const chatIndex = chatOrder.value.findIndex(
+                (userChat) => userChat.chat_id === event.chatAdmin.chat_id
+            );
 
-                return dateA === dateB ? 1 : dateB - dateA;
-            });
-
-            // Scroll to the scroll position the user actually had
-            window.scrollTo(window.scrollX, scrollPosition);
-        }
-
-        if (event.message.user_id != props.currentUser.id) {
-            // Play notification sound, if the message was not sent by the user
-            let audio = new Audio(asset("audio/notification.mp3"));
-            audio.play();
-        }
-    });
+            // Check, if the chat was found in the chatOrder array
+            if (chatIndex !== -1) {
+                // Change the admin of the chat to the new one
+                chatOrder.value[chatIndex].chat.admin = event.chatAdmin;
+            }
+        });
 }
 
 // Loading messages logic (because I am too dumb to do it any other way rn)

@@ -22,4 +22,15 @@ class ChatAdmin extends Model
     {
         return $this->belongsTo(Chat::class);
     }
+
+    public function toBroadcastArray()
+    {
+        return [
+            "id" => $this->id,
+            "user_id" => $this->user_id,
+            "chat_id" => $this->chat_id,
+            "created_at" => $this->created_at,
+            "updated_at" => $this->updated_at
+        ];
+    }
 }

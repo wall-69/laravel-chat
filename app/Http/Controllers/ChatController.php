@@ -28,7 +28,7 @@ class ChatController extends Controller
         $chatOrder = auth()->user()->userChats()
             ->with([
                 "chat",
-                "chat.admin.user:id,nickname",
+                "chat.admin",
                 "chat.lastMessage.user:id,nickname",
                 "chat.users:id,nickname,profile_picture",
                 "chat.bans.user:id,nickname,profile_picture"

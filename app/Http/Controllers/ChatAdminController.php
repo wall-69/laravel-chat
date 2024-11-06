@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ChatAdminChange;
 use App\Models\Chat;
 use App\Models\ChatAdmin;
 use App\Models\User;
@@ -17,6 +18,9 @@ class ChatAdminController extends Controller
         $this->notificationService = $notificationService;
     }
 
+    /**
+     * Changes the admin for the specified Chat from the data from the request. Also sends a notification message in the chat & broadcasts ChatAdminChange event for real time JS state update.
+     */
     public function changeAdmin(Request $request, Chat $chat)
     {
         // Check, if the chat is channel
@@ -36,10 +40,13 @@ class ChatAdminController extends Controller
         $currentAdmin->delete();
 
         // Create new ChatAdmin
-        ChatAdmin::create(["user_id" => $request->new_user_id, "chat_id" => $chat->id]);
+        $chatAdmin = ChatAdmin::create(["user_id" => $request->new_user_id, "chat_id" => $chat->id]);
 
         // Send notification to the Chat
         $this->notificationService->chat($chat, User::find($request->new_user_id)->nickname . " is now the admin of this channel.");
+
+        // Broadcast ChatAdminChange event
+        event(new ChatAdminChange($chatAdmin));
 
         return response()->json(["message" => "New admin was set successfully."]);
     }
