@@ -98,6 +98,16 @@ emitter.on("messageSent", async (message) => {
     lastMessage.value = message;
 });
 
+emitter.on("chatDeleted", (chatId) => {
+    // Check if the message that was sent is from this ChatTab's UserChat
+    if (chatId != userChat.value.chat_id) {
+        return;
+    }
+
+    // Set the chatDeleted flag to true
+    chatDeleted.value = true;
+});
+
 /*
  *  EVENTS
  */
@@ -130,6 +140,8 @@ const userChat = ref(props.userChat);
 const currentUser = inject("currentUser");
 const currentChat = inject("currentChat");
 
+const chatDeleted = ref(false);
+
 // Last message
 const lastMessage = ref(userChat.value.chat.last_message);
 
@@ -148,6 +160,11 @@ async function handleClick() {
  * Makes a post request to update the last read, then sets `read` variable to true.
  */
 async function updateLastRead() {
+    // Check, if the ChatTab was deleted (so was the UserChat also)
+    if (chatDeleted.value) {
+        return;
+    }
+
     try {
         await axios.post(
             route("userChats.updateLastRead", { userChat: userChat.value.id })

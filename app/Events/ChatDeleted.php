@@ -2,8 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\ChatAdmin;
-use App\Models\User;
+use App\Models\Chat;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -13,19 +12,19 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class ChatAdminChange implements ShouldBroadcastNow
+class ChatDeleted implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public readonly array $chatAdmin;
+    public readonly int $chatId;
 
     /**
      * Create a new event instance.
      */
     public function __construct(
-        ChatAdmin $chatAdmin
+        Chat $chat
     ) {
-        $this->chatAdmin = $chatAdmin->toBroadcastArray();
+        $this->chatId = $chat->id;
     }
 
     /**
@@ -36,7 +35,7 @@ class ChatAdminChange implements ShouldBroadcastNow
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel("chats." . $this->chatAdmin["chat_id"]),
+            new PrivateChannel("chats." . $this->chatId),
         ];
     }
 }

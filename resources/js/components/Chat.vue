@@ -144,8 +144,8 @@ async function joinPrivateChannel(channelName) {
                 audio.play();
             }
         })
-        // ChatAdminChange
-        .listen("ChatAdminChange", (event) => {
+        // ChatAdminChanged
+        .listen("ChatAdminChanged", (event) => {
             // Find the index of the chat in which the admin was changed
             const chatIndex = chatOrder.value.findIndex(
                 (userChat) => userChat.chat_id === event.chatAdmin.chat_id
@@ -155,6 +155,43 @@ async function joinPrivateChannel(channelName) {
             if (chatIndex !== -1) {
                 // Change the admin of the chat to the new one
                 chatOrder.value[chatIndex].chat.admin = event.chatAdmin;
+            }
+        })
+        // ChatUpdated event
+        .listen("ChatUpdated", (event) => {
+            // Find the index of the chat which was updated
+            const chatIndex = chatOrder.value.findIndex(
+                (userChat) => userChat.chat_id === event.chatId
+            );
+
+            // Check, if the chat was found in the chatOrder array
+            if (chatIndex !== -1) {
+                // Update data
+                for (let field in event.data) {
+                    chatOrder.value[chatIndex].chat[field] = event.data[field];
+                }
+            }
+            console.log(event.data);
+        })
+        // ChatDeleted event
+        .listen("ChatDeleted", (event) => {
+            // Find the index of the chat which was deleted
+            const chatIndex = chatOrder.value.findIndex(
+                (userChat) => userChat.chat_id === event.chatId
+            );
+
+            // Check, if the chat was found in the chatOrder array
+            if (chatIndex !== -1) {
+                // Emit the event for ChatTabs
+                emitter.emit("chatDeleted", event.chatId);
+
+                // Remove the chat from the array
+                chatOrder.value.splice(chatIndex, 1);
+
+                Echo.leave("chats." + event.chatId);
+
+                currentChat.value =
+                    chatOrder.value.length >= 1 ? chatOrder.value[0] : null;
             }
         });
 }

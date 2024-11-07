@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\ChatAdminChange;
+use App\Events\ChatAdminChanged;
 use App\Models\Chat;
 use App\Models\ChatAdmin;
 use App\Models\User;
@@ -45,8 +45,8 @@ class ChatAdminController extends Controller
         // Send notification to the Chat
         $this->notificationService->chat($chat, User::find($request->new_user_id)->nickname . " is now the admin of this channel.");
 
-        // Broadcast ChatAdminChange event
-        event(new ChatAdminChange($chatAdmin));
+        // Broadcast ChatAdminChanged event
+        event(new ChatAdminChanged($chatAdmin));
 
         return response()->json(["message" => "New admin was set successfully."]);
     }

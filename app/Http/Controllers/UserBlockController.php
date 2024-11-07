@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Chat;
 use App\Models\User;
 use App\Models\UserBlock;
 use App\Models\UserChat;
@@ -33,11 +34,17 @@ class UserBlockController extends Controller
                 "blocked_user_id" => $blockedUserId
             ]);
 
+            // TODO:
+            // Find the Chat for this DM
+            // $chat = Chat::whereType("dm")->whereHas("userChats", function ($query) {
+            //     $query->where("user_id", auth()->user()->id);
+            // })->get();
+            // dd($chat);
             // Remove the UserChat of the user that is blocking, if one exists
-            $userChat = UserChat::where("user_id", $userId)->where("name", User::find($blockedUserId)->nickname);
-            if ($userChat) {
-                $userChat->delete();
-            }
+            // $userChat = UserChat::where("user_id", $userId);
+            // if ($userChat) {
+            //     $userChat->delete();
+            // }
 
             return back();
         }

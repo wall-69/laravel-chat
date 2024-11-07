@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ChatDeleted;
+use App\Events\ChatUpdated;
 use App\Models\Chat;
 use App\Models\ChatAdmin;
 use App\Models\User;
@@ -203,6 +205,10 @@ class ChatController extends Controller
         // Update the Chat, if there is new data set
         if (!empty($data)) {
             $chat->update($data);
+
+            // Broadcast ChatUpdated event
+            event(new ChatUpdated($chat->id, $data));
+
             return response()->json(["message" => "Chat was updated successfully."]);
         }
 
@@ -214,7 +220,10 @@ class ChatController extends Controller
      */
     public function destroy(Chat $chat)
     {
+        // Broadcast the ChatDeleted event
+        event(new ChatDeleted($chat));
         $chat->delete();
+
         return response()->json(["message" => "Chat was successfully deleted."]);
     }
 
