@@ -12,24 +12,12 @@
                 <div class="d-flex align-items-center gap-2">
                     <!-- Chat picture -->
                     <img
-                        :src="
-                            currentChat.chat.type == 'dm'
-                                ? asset(
-                                      currentChat.chat.users[0].id ==
-                                          currentUser.id
-                                          ? currentChat.chat.users[1]
-                                                .profile_picture
-                                          : currentChat.chat.users[0]
-                                                .profile_picture
-                                  )
-                                : asset(currentChat.chat.picture)
-                        "
+                        :src="getChatPicture"
                         :alt="
-                            (currentChat.chat.type == 'dm'
-                                ? currentChat.chat.users[0].id == currentUser.id
-                                    ? currentChat.chat.users[1].nickname
-                                    : currentChat.chat.users[0].nickname
-                                : currentChat.chat.name) + ' profile picture'
+                            getChatName +
+                            ' ' +
+                            (isDM ? 'profile' : 'channel') +
+                            ' picture'
                         "
                         class="bg-white rounded-circle"
                         height="45"
@@ -37,24 +25,11 @@
                     />
                     <!-- Chat name -->
                     <component
-                        :is="currentChat.chat.type == 'dm' ? 'a' : 'p'"
-                        :href="
-                            '/profile/' +
-                            (currentChat.chat.type == 'dm'
-                                ? currentChat.chat.users[0].id == currentUser.id
-                                    ? currentChat.chat.users[1].nickname
-                                    : currentChat.chat.users[0].nickname
-                                : currentChat.chat.name)
-                        "
+                        :is="isDM ? 'a' : 'p'"
+                        :href="'/profile/' + getChatName"
                         class="m-0 text-white fw-bold"
                     >
-                        {{
-                            currentChat.chat.type == "dm"
-                                ? currentChat.chat.users[0].id == currentUser.id
-                                    ? currentChat.chat.users[1].nickname
-                                    : currentChat.chat.users[0].nickname
-                                : currentChat.chat.name
-                        }}
+                        {{ getChatName }}
                     </component>
                 </div>
 
@@ -78,13 +53,7 @@
             >
                 <!-- CHAT NAME -->
                 <span class="text-center fw-bold">
-                    {{
-                        currentChat.chat.type == "dm"
-                            ? currentChat.chat.users[0].id == currentUser.id
-                                ? currentChat.chat.users[1].nickname
-                                : currentChat.chat.users[0].nickname
-                            : currentChat.chat.name
-                    }}
+                    {{ getChatName }}
                 </span>
                 <hr class="w-100" />
                 <!-- USERS LIST -->
@@ -106,7 +75,7 @@
                         <a :href="route('users.show', user.nickname)">
                             {{ user.nickname }}
                             {{
-                                currentChat.chat.type == "channel" &&
+                                isChannel &&
                                 user.id == currentChat.chat.admin.user_id
                                     ? "(Admin)"
                                     : ""
@@ -115,7 +84,7 @@
                         <!-- ADMIN KICK/BAN BUTTONS -->
                         <template
                             v-if="
-                                currentChat.chat.type == 'channel' &&
+                                isChannel &&
                                 currentUser.id ==
                                     currentChat.chat.admin.user_id &&
                                 user.id != currentUser.id
@@ -140,7 +109,7 @@
                 <!-- ADMIN ACTIONS & BANNED USERS -->
                 <template
                     v-if="
-                        currentChat.chat.type == 'channel' &&
+                        isChannel &&
                         currentUser.id == currentChat.chat.admin.user_id
                     "
                 >
@@ -265,7 +234,7 @@
                 </template>
                 <!-- LEAVE CHANNEL BUTTON -->
                 <form
-                    v-if="currentChat.chat.type == 'channel'"
+                    v-if="isChannel"
                     method="POST"
                     :action="route('chat.leave', currentChat.chat.id)"
                 >
@@ -401,7 +370,16 @@
 <script setup>
 import axios from "axios";
 import { asset, useEmitter } from "../helper";
-import { inject, nextTick, onMounted, ref, watch } from "vue";
+import { computed, inject, nextTick, onMounted, ref, watch } from "vue";
+
+/*
+ * PROPS
+ */
+
+const props = defineProps({
+    isChannel: Boolean,
+    isDM: Boolean,
+});
 
 /*
  * EMITS
@@ -443,6 +421,32 @@ onMounted(() => {
 const messages = ref([]);
 const currentChat = inject("currentChat");
 const currentUser = inject("currentUser");
+
+const isChannel = computed(() => currentChat.value.chat.type == "channel");
+const isDM = computed(() => currentChat.value.chat.type == "dm");
+
+const getChatName = computed(() => {
+    if (!isDM.value) {
+        return currentChat.value.chat.name;
+    }
+
+    if (currentChat.value.chat.users[0].id == currentUser.id) {
+        return currentChat.value.chat.users[1].nickname;
+    } else {
+        return currentChat.value.chat.users[0].nickname;
+    }
+});
+const getChatPicture = computed(() => {
+    if (!isDM.value) {
+        return asset(currentChat.value.chat.picture);
+    }
+
+    if (currentChat.value.chat.users[0].id == currentUser.id) {
+        return currentChat.value.chat.users[1].profile_picture;
+    } else {
+        return currentChat.value.chat.users[0].profile_picture;
+    }
+});
 
 // Chat actions
 const chatActions = ref(null);

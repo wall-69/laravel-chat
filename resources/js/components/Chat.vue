@@ -49,7 +49,7 @@
 </template>
 
 <script setup>
-import { onMounted, provide, ref, watch } from "vue";
+import { computed, onMounted, provide, ref, watch } from "vue";
 import { asset, useEmitter } from "../helper";
 
 /*

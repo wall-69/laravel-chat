@@ -10,23 +10,9 @@
     >
         <!-- Chat Picture -->
         <img
-            :src="
-                userChat.chat.type == 'dm'
-                    ? asset(
-                          userChat.chat.users[0].id == currentUser.id
-                              ? userChat.chat.users[1].profile_picture
-                              : userChat.chat.users[0].profile_picture
-                      )
-                    : asset(userChat.chat.picture)
-            "
+            :src="getChatPicture"
             :alt="
-                (userChat.chat.type == 'dm'
-                    ? asset(
-                          userChat.chat.users[0].id == currentUser.id
-                              ? userChat.chat.users[1].nickname
-                              : userChat.chat.users[0].nickname
-                      )
-                    : asset(userChat.chat.name)) + ' profile picture'
+                getChatName + ' ' + (isDM ? 'profile' : 'channel') + ' picture'
             "
             class="bg-white rounded-circle ratio-1"
             width="65"
@@ -37,32 +23,18 @@
         <div class="d-flex flex-column min-w-0 placeholder-glow">
             <!-- Profile Name -->
             <p class="m-0 text-white fw-bold">
-                {{
-                    userChat.chat.type == "dm"
-                        ? userChat.chat.users[0].id == currentUser.id
-                            ? userChat.chat.users[1].nickname
-                            : userChat.chat.users[0].nickname
-                        : userChat.chat.name
-                }}
+                {{ getChatName }}
             </p>
             <!-- Last message -->
             <p class="m-0 text-white fw-light small text-truncate">
-                {{
-                    lastMessage
-                        ? lastMessage.type == "user"
-                            ? lastMessage.user.nickname +
-                              ": " +
-                              lastMessage.content
-                            : lastMessage.content
-                        : "No messages sent yet."
-                }}
+                {{ getLastMessage }}
             </p>
         </div>
     </div>
 </template>
 
 <script setup>
-import { inject, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, inject, onBeforeUnmount, onMounted, ref } from "vue";
 import { asset, useEmitter } from "../helper";
 
 /*
@@ -139,6 +111,44 @@ const userChat = ref(props.userChat);
 
 const currentUser = inject("currentUser");
 const currentChat = inject("currentChat");
+
+const isDM = computed(() => userChat.value.chat.type == "dm");
+const getLastMessage = computed(() => {
+    // No message
+    if (!lastMessage.value) {
+        return "No messages sent yet.";
+    }
+
+    // Non user message (system message)
+    if (lastMessage.value.type != "user") {
+        return lastMessage.value.content;
+    }
+
+    // User message (nickname: message)
+    return lastMessage.user.nickname + ": " + lastMessage.value.content;
+});
+const getChatName = computed(() => {
+    if (!isDM.value) {
+        return userChat.value.chat.name;
+    }
+
+    if (userChat.value.chat.users[0].id == currentUser.id) {
+        return userChat.value.chat.users[1].nickname;
+    } else {
+        return userChat.value.chat.users[0].nickname;
+    }
+});
+const getChatPicture = computed(() => {
+    if (!isDM.value) {
+        return asset(userChat.value.chat.picture);
+    }
+
+    if (userChat.value.chat.users[0].id == currentUser.id) {
+        return userChat.value.chat.users[1].profile_picture;
+    } else {
+        return userChat.value.chat.users[0].profile_picture;
+    }
+});
 
 const chatDeleted = ref(false);
 
