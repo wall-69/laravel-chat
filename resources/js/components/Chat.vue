@@ -2,7 +2,7 @@
     <div
         @touchstart="handleTouchStart"
         @touchend="handleTouchEnd"
-        class="px-2 px-md-0 container-md py-5"
+        class="px-0 px-md-2 container-md py-5"
     >
         <div class="row gx-0 gx-md-5">
             <!-- Desktop ChatTabs -->
