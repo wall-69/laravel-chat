@@ -57,7 +57,7 @@ class ChatController extends Controller
      */
     public function channels(Request $request)
     {
-        $channels = Chat::whereIsPrivate(false)->nameFilter($request->input("search"))->get();
+        $channels = Chat::whereIsPrivate(false)->nameFilter($request->input("search"))->paginate(20);
 
         return view("chat.channels", ["channels" => $channels]);
     }

@@ -125,7 +125,7 @@ const getLastMessage = computed(() => {
     }
 
     // User message (nickname: message)
-    return lastMessage.user.nickname + ": " + lastMessage.value.content;
+    return lastMessage.value.user.nickname + ": " + lastMessage.value.content;
 });
 const getChatName = computed(() => {
     if (!isDM.value) {

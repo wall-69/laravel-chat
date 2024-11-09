@@ -6,7 +6,7 @@
             :src="
                 user ? asset(user.profile_picture) : '/img/chat/male_avatar.svg'
             "
-            alt=""
+            :alt="user.nickname + ' profile picture'"
             width="35"
             height="35"
             class="bg-white rounded-circle align-self-start"
