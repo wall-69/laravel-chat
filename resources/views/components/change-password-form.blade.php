@@ -1,4 +1,8 @@
-<form class="px-5 py-4 bg-secondary rounded-4 d-flex flex-column gap-2">
+<form method="POST" action="{{ route('users.update', ['user' => auth()->user()->id]) }}"
+    class="px-5 py-4 bg-secondary rounded-4 d-flex flex-column gap-2">
+    @csrf
+    @method('PATCH')
+
     <h3 class="text-center text-white fw-normal border-bottom border-divider pb-1 border-opacity-25">
         Change password
     </h3>
@@ -13,7 +17,7 @@
     {{-- Password --}}
     <label for="password" class="text-start text-white fw-bold">current password:</label>
     <input type="password" name="password" class="py-2 px-1" value="{{ old('password') }}">
-    @error('password')
+    @error('change_password')
         <p class="text-warning fw-bold text-start">{{ $message }}</p>
     @enderror
 

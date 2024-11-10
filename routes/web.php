@@ -31,6 +31,8 @@ Route::controller(UserController::class)->name("users.")->group(function () {
 
     Route::middleware("auth")->group(function () {
         Route::post("/logout", "logout")->name("logout");
+
+        Route::patch("/users/{user}", "update")->name("update");
     });
 });
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -39,7 +40,7 @@ class UserController extends Controller
         // Validate
         $data = $request->validate([
             "nickname" => "required|min:5|max:20",
-            "email" => "required|email",
+            "email" => "required|email|unique:users",
             "password" => "required|min:5",
             "profile_picture" => "required|image"
         ]);
@@ -53,6 +54,67 @@ class UserController extends Controller
         auth()->login($user);
 
         return redirect(route("chat.index"));
+    }
+
+    /**
+     * Updates the user with specified data.
+     */
+    public function update(Request $request, User $user)
+    {
+        // Check, if the user updated is the user authenticated, just to make sure
+        if ($user->id != auth()->user()->id) {
+            abort(403);
+        }
+
+        $data = [];
+
+        // Nickname
+        if ($request->filled("nickname")) {
+            $request->validate([
+                "nickname" => "min:5|max:20",
+            ]);
+
+            $data["nickname"] = $request->nickname;
+        }
+        // Profile picture 
+        if ($request->hasFile("profile_picture")) {
+            $request->validate([
+                "profile_picture" => "image"
+            ]);
+
+            $filePath = $request->profile_picture->store("img/pfp", "public");
+            $data["profile_picture"] = "storage/" . $filePath;
+        }
+        // Email
+        if ($request->filled("email")) {
+            $request->validate([
+                "email" => "email|unique:users",
+                "password" => "required",
+            ]);
+
+            if (!Hash::check($request->password, $user->password)) {
+                return back()->withErrors(["password" => "The password is incorrect."]);
+            }
+
+            $data["email"] = $request->email;
+        }
+        // Password
+        if ($request->filled("new_password")) {
+            $request->validate([
+                "new_password" => "min:5",
+                "password" => "required",
+            ]);
+
+            if (!Hash::check($request->password, $user->password)) {
+                return back()->withErrors(["change_password" => "The password is incorrect."]);
+            }
+
+            $data["password"] = Hash::make($request->new_password);
+        }
+
+        $user->update($data);
+
+        return redirect(route("users.show", ["nickname" => $user->nickname]));
     }
 
     /**
