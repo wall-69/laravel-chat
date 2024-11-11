@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\ChatDeleted;
+use App\Events\UserChatDeleted;
 use App\Events\ChatUpdated;
 use App\Models\Chat;
 use App\Models\ChatAdmin;
@@ -220,8 +220,11 @@ class ChatController extends Controller
      */
     public function destroy(Chat $chat)
     {
-        // Broadcast the ChatDeleted event
-        event(new ChatDeleted($chat));
+        // Broadcast the UserChatDeleted event for each UserChat
+        foreach ($chat->userChats as $userChat) {
+            event(new UserChatDeleted($userChat));
+        }
+
         $chat->delete();
 
         return response()->json(["message" => "Chat was successfully deleted."]);
@@ -259,6 +262,9 @@ class ChatController extends Controller
         $userChat = UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chat->id)->firstOrFail();
         $chat = $userChat->chat; // Get the Chat, if we need to delete it after
 
+        // Broadcast the UserChatDeleted event
+        event(new UserChatDeleted($userChat));
+
         $userChat->delete();
         ChatAdmin::where("user_id", auth()->user()->id)->where("chat_id", $chat->id)->delete();
 
@@ -269,7 +275,8 @@ class ChatController extends Controller
             $chat->delete();
         }
 
-        return redirect(route("chat.index"));
+        return response()->json(["message" => "Successfully left the chat."]);
+        // return redirect(route("chat.index"));
     }
 
     /**
@@ -286,6 +293,8 @@ class ChatController extends Controller
 
         // Get the UserChat or abort, then delete it
         $userChat = UserChat::where("user_id", $user->id)->where("chat_id", $chat->id)->firstOrFail();
+        // Broadcast the UserChatDeleted event
+        event(new UserChatDeleted($userChat));
         $userChat->delete();
 
         $this->notificationService->chat($chat, $user->nickname . " has been kicked.");

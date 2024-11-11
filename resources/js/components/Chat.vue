@@ -173,15 +173,18 @@ async function joinPrivateChannel(channelName) {
             }
             console.log(event.data);
         })
-        // ChatDeleted event
-        .listen("ChatDeleted", (event) => {
+        // UserChatDeleted event
+        .listen("UserChatDeleted", (event) => {
             // Find the index of the chat which was deleted
             const chatIndex = chatOrder.value.findIndex(
                 (userChat) => userChat.chat_id === event.chatId
             );
 
-            // Check, if the chat was found in the chatOrder array
-            if (chatIndex !== -1) {
+            // Check, if the chat was found in the chatOrder array and if the UserChat id is the same as this one
+            if (
+                chatIndex !== -1 &&
+                chatOrder.value[chatIndex].id == event.userChatId
+            ) {
                 // Emit the event for ChatTabs
                 emitter.emit("chatDeleted", event.chatId);
 

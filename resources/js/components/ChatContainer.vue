@@ -233,17 +233,7 @@
                     </template>
                 </template>
                 <!-- LEAVE CHANNEL BUTTON -->
-                <form
-                    v-if="isChannel"
-                    method="POST"
-                    :action="route('chat.leave', currentChat.chat.id)"
-                >
-                    <input
-                        type="hidden"
-                        name="_token"
-                        :value="axios.defaults.headers.common['X-CSRF-TOKEN']"
-                    />
-
+                <form v-if="isChannel" @submit.prevent="handleLeave">
                     <button
                         type="submit"
                         class="border-0 bg-transparent d-flex align-items-center align-items-center gap-2 text-black px-0 mb-1"
@@ -431,7 +421,11 @@ const getChatName = computed(() => {
     }
 
     if (currentChat.value.chat.users[0].id == currentUser.id) {
-        return currentChat.value.chat.users[1].nickname;
+        if (currentChat.value.chat.users[1]) {
+            return currentChat.value.chat.users[1].nickname;
+        }
+
+        return "User";
     } else {
         return currentChat.value.chat.users[0].nickname;
     }
@@ -442,7 +436,12 @@ const getChatPicture = computed(() => {
     }
 
     if (currentChat.value.chat.users[0].id == currentUser.id) {
-        return currentChat.value.chat.users[1].profile_picture;
+        if (currentChat.value.chat.users[1]) {
+            return currentChat.value.chat.users[1].profile_picture;
+        }
+
+        // Default picture
+        return asset("img/chat/male_avatar.svg");
     } else {
         return currentChat.value.chat.users[0].profile_picture;
     }
@@ -484,6 +483,22 @@ function sendMessage() {
         formMessage.value = "";
     } catch (error) {
         console.error("Send message request error: " + error);
+    }
+}
+
+/**
+ * Sends a POST request to leave the current chat
+ */
+function handleLeave() {
+    try {
+        axios.post(route("chat.leave", { chat: currentChat.value.chat_id }));
+    } catch (error) {
+        console.error("Chat leave request error: " + error);
+    } finally {
+        // Close the chat actions menu, if it is opened
+        if (actionsShown.value) {
+            toggleActionsShown();
+        }
     }
 }
 

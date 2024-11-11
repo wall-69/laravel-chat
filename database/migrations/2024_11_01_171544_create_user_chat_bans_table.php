@@ -19,16 +19,6 @@ return new class extends Migration
             $table->foreignIdFor(Chat::class)->constrained()->onDelete("cascade");
             $table->timestamps();
         });
-
-        DB::unprepared('
-            CREATE TRIGGER remove_user_chat_on_ban
-            AFTER INSERT ON user_chat_bans
-            FOR EACH ROW
-            BEGIN
-                DELETE FROM user_chats
-                WHERE user_id = NEW.user_id AND chat_id = NEW.chat_id;
-            END;
-        ');
     }
 
     /**

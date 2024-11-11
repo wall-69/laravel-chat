@@ -133,7 +133,11 @@ const getChatName = computed(() => {
     }
 
     if (userChat.value.chat.users[0].id == currentUser.id) {
-        return userChat.value.chat.users[1].nickname;
+        if (userChat.value.chat.users[1]) {
+            return userChat.value.chat.users[1].nickname;
+        }
+
+        return "User";
     } else {
         return userChat.value.chat.users[0].nickname;
     }
@@ -144,7 +148,12 @@ const getChatPicture = computed(() => {
     }
 
     if (userChat.value.chat.users[0].id == currentUser.id) {
-        return userChat.value.chat.users[1].profile_picture;
+        if (userChat.value.chat.users[1]) {
+            return userChat.value.chat.users[1].profile_picture;
+        }
+
+        // Default DM chat picture
+        return asset("img/chat/male_avatar.svg");
     } else {
         return userChat.value.chat.users[0].profile_picture;
     }

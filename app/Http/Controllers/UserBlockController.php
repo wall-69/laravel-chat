@@ -2,14 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserChatDeleted;
 use App\Models\Chat;
 use App\Models\User;
 use App\Models\UserBlock;
 use App\Models\UserChat;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class UserBlockController extends Controller
 {
+    protected NotificationService $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
+
     /**
      * Stores the UserBlock to database.
      */
@@ -34,17 +43,31 @@ class UserBlockController extends Controller
                 "blocked_user_id" => $blockedUserId
             ]);
 
-            // TODO:
-            // Find the Chat for this DM
-            // $chat = Chat::whereType("dm")->whereHas("userChats", function ($query) {
-            //     $query->where("user_id", auth()->user()->id);
-            // })->get();
-            // dd($chat);
+            // Find the Chat of these 2 users (eloquent magic)
+            $chat = Chat::whereType("dm")
+                // Check for the blocking user
+                ->whereHas("userChats", function ($query) use ($userId) {
+                    $query->where("user_id", $userId);
+                })
+                ->whereHas("userChats", function ($query) use ($blockedUserId) {
+                    $query->where("user_id", $blockedUserId);
+                })->first();
+
             // Remove the UserChat of the user that is blocking, if one exists
-            // $userChat = UserChat::where("user_id", $userId);
-            // if ($userChat) {
-            //     $userChat->delete();
-            // }
+            if ($chat) {
+                $userChat = $chat->userChats()->where("user_id", $userId)->first();
+                if ($userChat) {
+                    // Broadcast the UserChatDeleted event (if for instance, the user has the chat opened on another tab)
+                    event(new UserChatDeleted($userChat));
+                    $userChat->delete();
+                }
+
+                /** @var \App\Models\Chat|null $chat */
+                $this->notificationService->chat(
+                    $chat,
+                    User::find($userId)->nickname . " blocked " . User::find($blockedUserId)->nickname . "."
+                );
+            }
 
             return back();
         }

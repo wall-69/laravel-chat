@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserChatDeleted;
 use App\Models\Chat;
 use App\Models\User;
+use App\Models\UserChat;
 use App\Models\UserChatBan;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
@@ -26,6 +28,15 @@ class UserChatBanController extends Controller
             "user_id" => "required:exists:users",
             "chat_id" => "required:exists:chats"
         ]);
+
+        // Get the User
+        $user = User::find($request->user_id);
+
+        // Get the UserChat or abort, then delete it
+        $userChat = UserChat::where("user_id", $user->id)->where("chat_id", $request->chat_id)->firstOrFail();
+        // Broadcast the UserChatDeleted event
+        event(new UserChatDeleted($userChat));
+        $userChat->delete();
 
         $this->notificationService->chat(Chat::find($request->chat_id), User::find($request->user_id)->nickname . " has been banned.");
         UserChatBan::create($data);
