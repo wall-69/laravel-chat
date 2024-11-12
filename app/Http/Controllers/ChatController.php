@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Events\UserChatDeleted;
 use App\Events\ChatUpdated;
+use App\Events\UserJoinedChat;
+use App\Events\UserLeftChat;
 use App\Models\Chat;
 use App\Models\ChatAdmin;
 use App\Models\User;
@@ -248,6 +250,9 @@ class ChatController extends Controller
             "picture" => $chat->picture
         ]);
 
+        // Broadcast UserJoinedChat event
+        event(new UserJoinedChat($chat->id, auth()->user()));
+
         $this->notificationService->chat($chat, auth()->user()->nickname . " has joined.");
 
         return redirect(route("chat.index"));
@@ -267,6 +272,9 @@ class ChatController extends Controller
 
         $userChat->delete();
         ChatAdmin::where("user_id", auth()->user()->id)->where("chat_id", $chat->id)->delete();
+
+        // Broadcast UserLeftChat event
+        event(new UserLeftChat($chat->id, auth()->user()));
 
         $this->notificationService->chat($chat, auth()->user()->nickname . " has left.");
 

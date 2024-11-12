@@ -196,6 +196,35 @@ async function joinPrivateChannel(channelName) {
                 currentChat.value =
                     chatOrder.value.length >= 1 ? chatOrder.value[0] : null;
             }
+        })
+        // UserJoinedChat event
+        .listen("UserJoinedChat", (event) => {
+            // Find the index of the chat to which a new user joined
+            const chatIndex = chatOrder.value.findIndex(
+                (userChat) => userChat.chat_id === event.chatId
+            );
+
+            // Check, if the chat was found in the chatOrder array
+            if (chatIndex !== -1) {
+                chatOrder.value[chatIndex].chat.users.push(event.user);
+            }
+        })
+        // UserLeftChat event
+        .listen("UserLeftChat", (event) => {
+            // Find the index of the chat which a user left
+            const chatIndex = chatOrder.value.findIndex(
+                (userChat) => userChat.chat_id === event.chatId
+            );
+
+            // Check, if the chat was found in the chatOrder array
+            if (chatIndex !== -1) {
+                const userIndex = chatOrder.value[
+                    chatIndex
+                ].chat.users.findIndex((user) => user.id === event.user.id);
+
+                // Remove the user from the array
+                chatOrder.value[chatIndex].chat.users.splice(userIndex, 1);
+            }
         });
 }
 

@@ -67,4 +67,16 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserChatBan::class);
     }
+
+    public function toBroadcastArray()
+    {
+        return [
+            "id" => $this->id,
+            "nickname" => $this->nickname,
+            "email" => $this->email,
+            "profile_picture" => $this->profile_picture,
+            "created_at" => $this->created_at,
+            "updated_at" => $this->updated_at,
+        ];
+    }
 }
