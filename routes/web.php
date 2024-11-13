@@ -45,38 +45,38 @@ Route::controller(ChatController::class)->name("chat.")->group(function () {
 
         Route::post("/chat", "store")->name("store");
         // api perhaps?
-        Route::post("/chat/{chat}/join", "join")->name("join");
-        Route::post("/chat/{chat}/leave", "leave")->name("leave");
-        Route::post("/chat/{chat}/kick", "kick")->name("kick");
+        Route::post("/chats/{chat}/join", "join")->name("join");
+        Route::post("/chats/{chat}/leave", "leave")->name("leave");
+        Route::post("/chats/{chat}/kick", "kick")->name("kick");
 
         // Should be API???
-        Route::patch("/chat/{chat}", "update")->name("update");
-        Route::delete("/chat/{chat}", "destroy")->name("destroy");
+        Route::patch("/chats/{chat}", "update")->name("update");
+        Route::delete("/chats/{chat}", "destroy")->name("destroy");
     });
 });
 
 // ChatAdmin
 // SHOULD BE API???
 Route::controller(ChatAdminController::class)->name("chatAdmins.")->middleware("auth")->group(function () {
-    Route::post("/chat/{chat}/change-admin", "changeAdmin")->name("changeAdmin");
+    Route::post("/chats/{chat}/change-admin", "changeAdmin")->name("changeAdmin");
 });
 
 // UserChat
 Route::controller(UserChatController::class)->name("userChats.")->middleware("auth")->group(function () {
-    Route::post("/user-chat/{userChat}/last-read", "updateLastRead")->name("updateLastRead");
+    Route::post("/user-chats/{userChat}/last-read", "updateLastRead")->name("updateLastRead");
 });
 
 // UserBlock
 Route::controller(UserBlockController::class)->name("userBlocks.")->middleware("auth")->group(function () {
-    Route::post("/user-block", "store")->name("store");
-    Route::delete("/user-block/{userBlock}", "destroy")->name("destroy");
+    Route::post("/user-blocks", "store")->name("store");
+    Route::delete("/user-blocks/{userBlock}", "destroy")->name("destroy");
 });
 
 // UserChatBan
 // TODO: API?????
 Route::controller(UserChatBanController::class)->name("userChatBans.")->middleware("auth")->group(function () {
-    Route::post("/user-chat-ban/", "store")->name("store");
-    Route::delete("/user-chat-ban/{userChatBan}", "destroy")->name("destroy");
+    Route::post("/user-chat-bans/", "store")->name("store");
+    Route::delete("/user-chat-bans/{userChatBan}", "destroy")->name("destroy");
 });
 
 // Message
