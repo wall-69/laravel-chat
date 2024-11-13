@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserBannedFromChat;
 use App\Events\UserChatDeleted;
 use App\Models\Chat;
 use App\Models\User;
@@ -39,7 +40,10 @@ class UserChatBanController extends Controller
         $userChat->delete();
 
         $this->notificationService->chat(Chat::find($request->chat_id), User::find($request->user_id)->nickname . " has been banned.");
-        UserChatBan::create($data);
+        $userChatBan = UserChatBan::create($data);
+
+        // Broadcast the UserBannedFromChat event
+        event(new UserBannedFromChat($request->chat_id, $userChatBan));
 
         return response()->json(["message" => "User was successfully banned."]);
     }

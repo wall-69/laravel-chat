@@ -225,6 +225,19 @@ async function joinPrivateChannel(channelName) {
                 // Remove the user from the array
                 chatOrder.value[chatIndex].chat.users.splice(userIndex, 1);
             }
+        })
+        // UserBannedFromChat event
+        .listen("UserBannedFromChat", (event) => {
+            // Find the index of the chat in which a user was banned
+            const chatIndex = chatOrder.value.findIndex(
+                (userChat) => userChat.chat_id === event.chatId
+            );
+
+            // Check, if the chat was found in the chatOrder array
+            if (chatIndex !== -1) {
+                // Add the ban to the ban list
+                currentChat.value.chat.bans.push(event.ban);
+            }
         });
 }
 
