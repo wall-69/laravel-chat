@@ -608,6 +608,10 @@ async function prepareChat() {
 }
 
 // Admin actions
+/**
+ * Sends a POST request to kick the User from this Chat, this removes his UserChat of this Chat.
+ * @param userId The id of the User
+ */
 async function handleKick(userId) {
     try {
         const formData = new FormData();
@@ -630,6 +634,10 @@ async function handleKick(userId) {
     }
 }
 
+/**
+ * Sends a POST request to create a new UserChatBan.
+ * @param userId The id of the User
+ */
 async function handleBan(userId) {
     try {
         const formData = new FormData();
@@ -649,6 +657,10 @@ async function handleBan(userId) {
     }
 }
 
+/**
+ * Sends a DELETE request to delete the specified ban.
+ * @param banId The id of the UserChatBan
+ */
 async function handleUnban(banId) {
     try {
         const res = await axios.delete(
