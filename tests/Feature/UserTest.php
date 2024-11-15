@@ -27,14 +27,12 @@ class UserTest extends TestCase
 
         /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
         $response = $this->actingAs($user)->get("/login");
-        $response->assertStatus(302);
         $response->assertRedirect(route("chat.index"));
     }
 
     public function test_logout_returns_302_as_guest(): void
     {
         $response = $this->get("/logout");
-        $response->assertStatus(302);
         $response->assertRedirect(route("index"));
     }
 
@@ -44,7 +42,6 @@ class UserTest extends TestCase
 
         /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
         $response = $this->actingAs($user)->get("/logout");
-        $response->assertStatus(302);
         $response->assertRedirect(route("index"));
     }
 
@@ -60,14 +57,12 @@ class UserTest extends TestCase
 
         /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
         $response = $this->actingAs($user)->get("/register");
-        $response->assertStatus(302);
         $response->assertRedirect(route("chat.index"));
     }
 
     public function test_chat_returns_302_as_guest(): void
     {
         $response = $this->get("/chat");
-        $response->assertStatus(302);
         $response->assertRedirect(route("login"));
     }
 
@@ -88,14 +83,13 @@ class UserTest extends TestCase
             "nickname" => "test_user",
             "email" => "test@test.com",
             "password" => "testpassword",
-            "profile_picture" => $file = File::image("image.jpg"),
+            "profile_picture" => File::image("image.jpg"),
         ];
 
         // Send POST request to store route
         $response = $this->post(route("users.store"), $data);
 
         // Assert response status
-        $response->assertStatus(302);
         $response->assertRedirect(route("chat.index"));
 
         // Check, if user was created in db
@@ -123,7 +117,6 @@ class UserTest extends TestCase
         $response = $this->post(route("users.login", $data));
 
         // Assert response status
-        $response->assertStatus(302);
         $response->assertRedirect(route("chat.index"));
 
         $this->assertAuthenticatedAs($user);
@@ -138,9 +131,103 @@ class UserTest extends TestCase
         $response = $this->actingAs($user)->post(route("users.logout"));
 
         // Assert response status
-        $response->assertStatus(302);
         $response->assertRedirect(route("index"));
 
         $this->assertGuest();
+    }
+
+    public function test_user_can_change_nickname(): void
+    {
+        Storage::fake("public");
+
+        $user = User::factory()->create();
+
+        $data = [
+            "nickname" => $newNickname = fake()->name()
+        ];
+
+        // Send PATCH request to update route
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
+        $response = $this->actingAs($user)->patch(route("users.update", ["user" => $user->id]), $data);
+
+        // Assert response status
+        $response->assertRedirect(route("users.show", ["nickname" => $newNickname]));
+
+        // Assert that the database contains new name
+        $this->assertDatabaseHas("users", [
+            "id" => $user->id,
+            "nickname" => $newNickname
+        ]);
+    }
+
+    public function test_user_can_change_profile_picture(): void
+    {
+        $user = User::factory()->create();
+
+        $data = [
+            "profile_picture" => File::image("image.jpg")
+        ];
+
+        // Send PATCH request to update route
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
+        $response = $this->actingAs($user)->patch(route("users.update", ["user" => $user->id]), $data);
+
+        // Assert response status
+        $response->assertRedirect(route("users.show", ["nickname" => $user->nickname]));
+
+        // Assert that the new profile picture is stored
+        $user->refresh();
+        Storage::disk("public")->assertExists(str_replace("storage/", "", $user->profile_picture));
+    }
+
+    public function test_user_can_change_email(): void
+    {
+        $user = User::factory()->create([
+            "password" => Hash::make("testpassword")
+        ]);
+
+        $data = [
+            "email" => $newEmail = fake()->email(),
+            "password" => "testpassword"
+        ];
+
+        // Send PATCH request to update route
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
+        $response = $this->actingAs($user)->patch(route("users.update", ["user" => $user->id]), $data);
+
+        // Assert response status
+        $response->assertRedirect(route("users.show", ["nickname" => $user->nickname]));
+
+        // Assert that the database contains new email
+        $this->assertDatabaseHas("users", [
+            "id" => $user->id,
+            "email" => $newEmail
+        ]);
+    }
+
+    public function test_user_can_change_password(): void
+    {
+        $user = User::factory()->create([
+            "password" => Hash::make("testpassword")
+        ]);
+
+        $data = [
+            "new_password" => $newPassword = fake()->password(),
+            "password" => $oldPassword = "testpassword"
+        ];
+
+        // Send PATCH request to update route
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
+        $response = $this->actingAs($user)->patch(route("users.update", ["user" => $user->id]), $data);
+
+        // Assert response status
+        $response->assertRedirect(route("users.show", ["nickname" => $user->nickname]));
+
+        $user->refresh();
+
+        // Assert that the new password is correct
+        $this->assertTrue(Hash::check($newPassword, $user->password));
+        // Assert that the old password is not correct
+        $this->assertFalse(Hash::check($oldPassword, $user->password));
     }
 }
