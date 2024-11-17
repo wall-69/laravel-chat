@@ -13,6 +13,7 @@ use App\Models\UserChat;
 use App\Models\UserChatBan;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
+use Storage;
 
 class ChatController extends Controller
 {
@@ -222,6 +223,15 @@ class ChatController extends Controller
      */
     public function destroy(Chat $chat)
     {
+        // Delete the chat picture, if it is a channel
+        if ($chat->isChannel()) {
+            $filePath = str_replace("storage/", "", $chat->picture);
+
+            if (Storage::disk("public")->fileExists($filePath)) {
+                Storage::disk("public")->delete($filePath);
+            }
+        }
+
         // Broadcast the UserChatDeleted event for each UserChat
         foreach ($chat->userChats as $userChat) {
             event(new UserChatDeleted($userChat));
