@@ -12,7 +12,7 @@
             ref="form"
             @submit="handleFormSubmit"
             method="POST"
-            :action="route('chat.update', { chat: chat.id })"
+            :action="route('chats.update', { chat: chat.id })"
             :enctype="enctype"
             class="d-flex align-items-center flex-wrap gap-1"
         >
@@ -44,7 +44,7 @@ const props = defineProps({
     actionName: String,
     actionUrl: {
         type: String,
-        default: (props) => route("chat.update", { chat: props.chat.id }),
+        default: (props) => route("chats.update", { chat: props.chat.id }),
     },
     method: String,
     enctype: String,

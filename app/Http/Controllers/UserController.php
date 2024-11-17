@@ -25,7 +25,7 @@ class UserController extends Controller
             $request->session()->regenerateToken();
             $request->session()->regenerate();
 
-            return redirect(route("chat.index"));
+            return redirect(route("chats.index"));
         }
 
         // Redirect to login page with error
@@ -53,7 +53,7 @@ class UserController extends Controller
         $user = User::create($data);
         auth()->login($user);
 
-        return redirect(route("chat.index"));
+        return redirect(route("chats.index"));
     }
 
     /**

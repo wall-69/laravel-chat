@@ -56,7 +56,7 @@
                                         (auth()->user()->userChats->doesntContain('name', $user->nickname) &&
                                             auth()->user()->userBlocks->doesntContain('blocked_user_id', $user->id) &&
                                             $user->userBlocks->doesntContain('blocked_user_id', auth()->user()->id)))
-                                    <form method="POST" action="{{ route('chat.store') }}">
+                                    <form method="POST" action="{{ route('chats.store') }}">
                                         @method('POST')
                                         @csrf
 

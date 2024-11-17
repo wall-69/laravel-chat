@@ -3,7 +3,7 @@
         'class' =>
             'container rounded-5 d-flex flex-column align-items-center gap-3 px-5 py-3 bg-secondary text-white text-center',
     ]) }}
-    method="POST" action="{{ route('chat.store') }}" enctype="multipart/form-data">
+    method="POST" action="{{ route('chats.store') }}" enctype="multipart/form-data">
     @method('POST')
     @csrf
 

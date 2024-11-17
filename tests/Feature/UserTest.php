@@ -27,7 +27,7 @@ class UserTest extends TestCase
 
         /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
         $response = $this->actingAs($user)->get("/login");
-        $response->assertRedirect(route("chat.index"));
+        $response->assertRedirect(route("chats.index"));
     }
 
     public function test_logout_returns_302_as_guest(): void
@@ -57,7 +57,7 @@ class UserTest extends TestCase
 
         /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
         $response = $this->actingAs($user)->get("/register");
-        $response->assertRedirect(route("chat.index"));
+        $response->assertRedirect(route("chats.index"));
     }
 
     public function test_chat_returns_302_as_guest(): void
@@ -90,7 +90,7 @@ class UserTest extends TestCase
         $response = $this->post(route("users.store"), $data);
 
         // Assert response status
-        $response->assertRedirect(route("chat.index"));
+        $response->assertRedirect(route("chats.index"));
 
         // Check, if user was created in db
         $this->assertDatabaseHas("users", [
@@ -117,7 +117,7 @@ class UserTest extends TestCase
         $response = $this->post(route("users.login", $data));
 
         // Assert response status
-        $response->assertRedirect(route("chat.index"));
+        $response->assertRedirect(route("chats.index"));
 
         $this->assertAuthenticatedAs($user);
     }

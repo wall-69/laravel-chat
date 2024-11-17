@@ -5,12 +5,12 @@
         {{-- DESKTOP LINKS --}}
         <ul class="d-none list-unstyled d-md-flex my-auto gap-5">
             <li>
-                <a href="{{ route('chat.index') }}" class="text-white fs-5 {{ request()->is('chat') ? 'fw-bold' : '' }}">
+                <a href="{{ route('chats.index') }}" class="text-white fs-5 {{ request()->is('chat') ? 'fw-bold' : '' }}">
                     Chat
                 </a>
             </li>
             <li>
-                <a href="{{ route('chat.channels') }}"
+                <a href="{{ route('chats.channels') }}"
                     class="text-white fs-5 {{ request()->is('channels') ? 'fw-bold' : '' }}">
                     Channels
                 </a>
@@ -45,13 +45,13 @@
 
             <ul class="dropdown-menu">
                 <li>
-                    <a href="{{ route('chat.index') }}"
+                    <a href="{{ route('chats.index') }}"
                         class="dropdown-item fs-5 {{ request()->is('chat') ? 'fw-bold' : '' }}">
                         Chat
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('chat.channels') }}"
+                    <a href="{{ route('chats.channels') }}"
                         class="dropdown-item fs-5 {{ request()->is('channels') ? 'fw-bold' : '' }}">
                         Channels
                     </a>

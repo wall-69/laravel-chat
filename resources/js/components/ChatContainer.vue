@@ -185,7 +185,9 @@
                         :chat="currentChat.chat"
                         action-name="Delete"
                         :action-url="
-                            route('chat.destroy', { chat: currentChat.chat.id })
+                            route('chats.destroy', {
+                                chat: currentChat.chat.id,
+                            })
                         "
                         method="DELETE"
                     >
@@ -346,7 +348,7 @@
                 <br />
                 Explore channels here:
                 <a
-                    :href="route('chat.channels')"
+                    :href="route('chats.channels')"
                     class="text-decoration-underline text-accent"
                 >
                     Channels
@@ -491,7 +493,7 @@ function sendMessage() {
  */
 function handleLeave() {
     try {
-        axios.post(route("chat.leave", { chat: currentChat.value.chat_id }));
+        axios.post(route("chats.leave", { chat: currentChat.value.chat_id }));
     } catch (error) {
         console.error("Chat leave request error: " + error);
     } finally {
@@ -618,7 +620,7 @@ async function handleKick(userId) {
         formData.append("user_id", userId);
 
         const res = await axios.post(
-            route("chat.kick", { chat: currentChat.value.chat.id }),
+            route("chats.kick", { chat: currentChat.value.chat.id }),
             formData,
             {
                 ContentType: "multipart/form-data",

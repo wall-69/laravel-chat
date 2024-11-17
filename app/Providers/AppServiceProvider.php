@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Instead of redirection to index home page, redirect to chat index
         RedirectIfAuthenticated::redirectUsing(function () {
-            return route("chat.index");
+            return route("chats.index");
         });
 
         // Use Bootstrap pagination styling

@@ -163,7 +163,7 @@ class ChatController extends Controller
             ]);
         }
 
-        return redirect(route("chat.index"));
+        return redirect(route("chats.index"));
     }
 
     /**
@@ -265,7 +265,7 @@ class ChatController extends Controller
 
         $this->notificationService->chat($chat, auth()->user()->nickname . " has joined.");
 
-        return redirect(route("chat.index"));
+        return redirect(route("chats.index"));
     }
 
     /**
@@ -294,7 +294,7 @@ class ChatController extends Controller
         }
 
         return response()->json(["message" => "Successfully left the chat."]);
-        // return redirect(route("chat.index"));
+        // return redirect(route("chats.index"));
     }
 
     /**

@@ -12,7 +12,7 @@
                         <div
                             class="ms-lg-0 w-md-75 h-100 container rounded-5 d-flex flex-column align-items-center gap-3 px-5 py-3 bg-secondary text-white text-center">
                             <h3 class="py-3 fw-light">You are already logged in!</h3>
-                            <a href="{{ route('chat.index') }}">
+                            <a href="{{ route('chats.index') }}">
                                 <button type="submit" class="btn btn-accent rounded-0 text-white fw-bold fs-5 px-4 py-1 shadow">
                                     Go to LaraChat
                                 </button>
