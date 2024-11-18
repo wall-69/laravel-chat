@@ -196,6 +196,15 @@ class ChatController extends Controller
             // Validate the data
             $request->validate(["chat_picture" => "image"]);
 
+            // Delete the old chat picture, if it is a channel
+            if ($chat->isChannel()) {
+                $filePath = str_replace("storage/", "", $chat->picture);
+
+                if (Storage::disk("public")->fileExists($filePath)) {
+                    Storage::disk("public")->delete($filePath);
+                }
+            }
+
             // Store the image
             $filePath = $request->chat_picture->store("img/chat_pictures", "public");
             $chat_picture = "storage/" . $filePath;
