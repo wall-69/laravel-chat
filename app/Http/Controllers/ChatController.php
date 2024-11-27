@@ -256,8 +256,10 @@ class ChatController extends Controller
      */
     public function join(Chat $chat)
     {
-        if (UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chat->id)->exists()) {
-            abort(400, "You are already in this chat.");
+        if ($chat->isChannel() && $chat->is_private) {
+            abort(400, "You cant join this channel.");
+        } else if (UserChat::where("user_id", auth()->user()->id)->where("chat_id", $chat->id)->exists()) {
+            abort(400, "You are already in this channel.");
         } else if (UserChatBan::where("user_id", auth()->user()->id)->where("chat_id", $chat->id)->exists()) {
             abort(400, "You are banned from this channel!");
         }
