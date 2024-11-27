@@ -94,7 +94,7 @@ provide("currentChat", currentChat);
  * @param channelName The name of the channel
  */
 async function joinPrivateChannel(channelName) {
-    // Listens in private chat channel for MessageSent event
+    // Listens in private chat channel
     Echo.private(channelName)
         // MessageSent
         .listen("MessageSent", async (event) => {
@@ -171,7 +171,6 @@ async function joinPrivateChannel(channelName) {
                     chatOrder.value[chatIndex].chat[field] = event.data[field];
                 }
             }
-            console.log(event.data);
         })
         // UserChatDeleted event
         .listen("UserChatDeleted", (event) => {
